@@ -2,6 +2,7 @@
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Collections;
 
 class ServerSidePlayer extends Thread {
     ServerSidePlayer opponent;
@@ -10,6 +11,8 @@ class ServerSidePlayer extends Thread {
     ObjectOutputStream output;
     ServerSideGame game;
     String player;
+
+    int points;
 
 
     public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {
@@ -42,6 +45,9 @@ class ServerSidePlayer extends Thread {
         return opponent;
     }
 
+    public String getPoints() {
+        return String.valueOf(points);
+    }
 
     public void run() {
 
@@ -61,6 +67,7 @@ class ServerSidePlayer extends Thread {
                     output.writeObject("MESSAGE Select a category");
                     while ((pickedCategory = input.readLine()) != null) {
                         game.setSelectedCategory(pickedCategory);
+                        Collections.shuffle(game.getSelectedCategory().getQuestions());
                         break;
                     }
                 } else {
@@ -74,7 +81,7 @@ class ServerSidePlayer extends Thread {
 
                     if ((userAnswer = input.readLine()) != null) {
                         if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(rondnr).getAnswer())) {
-                            game.points++;
+                            this.points++;
 
                         }
                     }
@@ -83,7 +90,7 @@ class ServerSidePlayer extends Thread {
                     Thread.sleep(2000);
                     if (rondnr == 2) {
                         rondnr = 0;
-                        output.writeObject("POINTS" + "\n" + player + ": " + game.getMyPoints() + "\n" + opponent.player + ": " + opponent.game.getMyPoints());
+                        output.writeObject("POINTS" + "\n" + player + ": " + points + " \n" + opponent.player + ": " + opponent.getPoints());
                         Thread.sleep(2000);
                         break;
                     }
