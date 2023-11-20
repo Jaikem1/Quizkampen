@@ -1,13 +1,17 @@
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 
 public class ServerListener {
 
     public static void main(String[] args) {
+        GameLoader gameLoader = new GameLoader();
+        ArrayList<Category> categories = gameLoader.loadGame();
+
 
         while (true) {
-            ServerSideGame game = new ServerSideGame();
+            ServerSideGame game = new ServerSideGame(categories);
 
             try (ServerSocket serverSocket = new ServerSocket(55565);) {
 
