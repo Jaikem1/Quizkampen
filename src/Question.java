@@ -2,6 +2,7 @@
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Question implements Serializable {
 
@@ -16,6 +17,7 @@ public class Question implements Serializable {
         alternatives.add(wrongAnswer1);
         alternatives.add(wrongAnswer2);
         alternatives.add(wrongAnswer3);
+        Collections.shuffle(alternatives);
     }
 
     public String getQuestion() {
