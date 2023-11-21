@@ -14,7 +14,8 @@ class ServerSidePlayer extends Thread {
 
     int points;
     private int roundPoints = 0;
-    private List<Integer> allRoundPoints= new ArrayList<>();
+    private int roundNumber = 0;
+    private List<Integer> allRoundPoints = new ArrayList<>();
 
 
     public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {
@@ -59,8 +60,10 @@ class ServerSidePlayer extends Thread {
         return this.allRoundPoints;
     }
 
-    public void run() {
+    public int getRoundNumber() {return this.roundNumber;}
 
+    public void run() {
+        roundNumber = allRoundPoints.size() + 1;
         String userAnswer;
         String pickedCategory = "";
         int rondnr = 0;
@@ -70,7 +73,7 @@ class ServerSidePlayer extends Thread {
 
             // Quiz runda
             while (true) {
-
+                this.roundNumber = allRoundPoints.size() + 1;
                 output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName());
 
                 if (this.equals(game.currentPlayer)) {
@@ -84,9 +87,9 @@ class ServerSidePlayer extends Thread {
                     output.writeObject("MESSAGE Other player is choosing category ");
                     output.writeObject("DISABLE");
                 }
-
                 while (game.getSelectedCategory() != null) {
                     output.writeObject(game.getSelectedCategory().getQuestions().get(rondnr));
+
 
 
                     if ((userAnswer = input.readLine()) != null) {
@@ -100,11 +103,11 @@ class ServerSidePlayer extends Thread {
                     Thread.sleep(2000);
                     if (rondnr == 2) {
                         rondnr = 0;
+                        this.allRoundPoints.add(this.roundPoints);
                         String pointMsg = "<html>POINTS  <br>" + player + ": " + points + "<br>" +
-                                            opponent.player + ": " + opponent.getPoints() + "</html>";
+                                            opponent.player + ": " + opponent.getPoints() + "<br><br>" + getRoundNumber() + "</html>";
                         output.writeObject(pointMsg);
                         Thread.sleep(2000);
-                        allRoundPoints.add(roundPoints);
                         this.roundPoints = 0;
                         break;
                     }
