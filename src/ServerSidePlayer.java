@@ -1,8 +1,8 @@
-
-
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 class ServerSidePlayer extends Thread {
     ServerSidePlayer opponent;
@@ -13,6 +13,8 @@ class ServerSidePlayer extends Thread {
     String player;
 
     int points;
+    private int roundPoints = 0;
+    private List<Integer> allRoundPoints= new ArrayList<>();
 
 
     public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {
@@ -49,6 +51,14 @@ class ServerSidePlayer extends Thread {
         return String.valueOf(points);
     }
 
+    public String getRoundPoints() {
+        return String.valueOf(this.roundPoints);
+    }
+
+    public List<Integer> getAllRoundPoints() {
+        return this.allRoundPoints;
+    }
+
     public void run() {
 
         String userAnswer;
@@ -82,6 +92,7 @@ class ServerSidePlayer extends Thread {
                     if ((userAnswer = input.readLine()) != null) {
                         if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(rondnr).getAnswer())) {
                             this.points++;
+                            this.roundPoints++;
 
                         }
                     }
@@ -90,8 +101,11 @@ class ServerSidePlayer extends Thread {
                     Thread.sleep(2000);
                     if (rondnr == 2) {
                         rondnr = 0;
-                        output.writeObject("POINTS" + "\n" + player + ": " + points + " \n" + opponent.player + ": " + opponent.getPoints());
+                        String pointMsg = "<html>POINTS  <br>" + player + ": " + points + "<br>" +
+                                            opponent.player + ": " + opponent.getPoints() + "</html>";
+                        output.writeObject(pointMsg);
                         Thread.sleep(2000);
+                        this.roundPoints = 0;
                         break;
                     }
                 }
@@ -120,6 +134,7 @@ class ServerSidePlayer extends Thread {
             try {
                 socket.close();
             } catch (IOException e) {
+                System.out.println("Encountered following error: " + e);
             }
         }
     }

@@ -24,6 +24,7 @@ public class User extends JFrame implements ActionListener {
     Color normal = a.getBackground();
     ArrayList<JButton> buttons = new ArrayList<>();
 
+
     public User() {
 
         setTitle("Quiz Game");
@@ -81,7 +82,7 @@ public class User extends JFrame implements ActionListener {
                         text.setText(message);
                     } else if (message.startsWith("DISABLE")) {
                         disableButtons();
-                    } else if (message.startsWith("POINTS")) {
+                    } else if (message.startsWith("<html>POINTS")) {
                         hideButtons();
                         text.setText(message);
                     } else {
