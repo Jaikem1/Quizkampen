@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class User extends JFrame implements ActionListener {
     JPanel buttonBoard = new JPanel(new GridLayout(2, 2, 2, 2));
@@ -52,7 +53,7 @@ public class User extends JFrame implements ActionListener {
         }
 
 
-        setSize(400, 350);
+        setSize(500, 350);
         setLocationRelativeTo(null);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);

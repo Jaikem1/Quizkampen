@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Properties;
 import java.util.List;
 
 class ServerSidePlayer extends Thread {
@@ -63,10 +64,15 @@ class ServerSidePlayer extends Thread {
     public int getRoundNumber() {return this.roundNumber;}
 
     public void run() {
+
+        Properties p = new Properties();
+
         roundNumber = allRoundPoints.size() + 1;
         String userAnswer;
         String pickedCategory = "";
-        int rondnr = 0;
+
+        int settingsQuestionsPerRound;
+        int currentQuestion = 0;
 
 
         try {
@@ -74,6 +80,15 @@ class ServerSidePlayer extends Thread {
             // Quiz runda
             while (true) {
                 this.roundNumber = allRoundPoints.size() + 1;
+
+                try {
+                    p.load(new FileInputStream("src/Settings.properties"));
+                } catch (IOException e) {
+                    System.out.println("Settings filen hittades ej!");;
+                }
+
+                settingsQuestionsPerRound = Integer.parseInt(p.getProperty("questionsPerRound", "1"));
+
                 output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName());
 
                 if (this.equals(game.currentPlayer)) {
@@ -87,20 +102,23 @@ class ServerSidePlayer extends Thread {
                     output.writeObject("MESSAGE Other player is choosing category ");
                     output.writeObject("DISABLE");
                 }
-                while (game.getSelectedCategory() != null) {
-                    output.writeObject(game.getSelectedCategory().getQuestions().get(rondnr));
 
+                while (game.getSelectedCategory() != null) {
+                    output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
 
 
                     if ((userAnswer = input.readLine()) != null) {
-                        if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(rondnr).getAnswer())) {
+                        if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(currentQuestion).getAnswer())) {
                             this.points++;
                             this.roundPoints++;
                         }
                     }
                     game.legalMove(this);
-                    rondnr++;
+                    currentQuestion++;
                     Thread.sleep(2000);
+                    if (currentQuestion == settingsQuestionsPerRound) {
+                        currentQuestion = 0;
+                        output.writeObject("POINTS" + "\n" + player + ": " + points + " \n" + opponent.player + ": " + opponent.getPoints());
                     if (rondnr == 2) {
                         rondnr = 0;
                         this.allRoundPoints.add(this.roundPoints);
