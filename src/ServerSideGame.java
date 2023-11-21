@@ -43,10 +43,14 @@ class ServerSideGame {
 
 
     public synchronized void legalMove(ServerSidePlayer player) {
-        if (player != currentPlayer) {
+        if (player == currentPlayer) {
             currentPlayer = currentPlayer.getOpponent();
 
         }
+    }
+
+    public synchronized void switchCurrentPlayer() {
+            currentPlayer = currentPlayer.getOpponent();
     }
 
     public Category getSelectedCategory() {

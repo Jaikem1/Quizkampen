@@ -53,12 +53,6 @@ class ServerSidePlayer extends Thread {
         return String.valueOf(points);
     }
 
-    public synchronized void endOfStateWait() throws InterruptedException {
-        if (this.opponent.getState() == State.WAITING) {
-            notifyAll();
-        } else wait();
-    }
-
     public void run() {
 
         String userAnswer;
@@ -71,10 +65,11 @@ class ServerSidePlayer extends Thread {
             // Quiz runda
             while (true) {
 
-
                 output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName());
 
                 if (state == SELECT) {
+                    rondnr = 0;
+
                     if (this.equals(game.currentPlayer)) {
                         output.writeObject("MESSAGE Select a category");
                         while ((pickedCategory = input.readLine()) != null) {
@@ -85,12 +80,12 @@ class ServerSidePlayer extends Thread {
                             break;
                         }
                     } else {
-                        game.categoryIsPicked = false;
                         output.writeObject("MESSAGE Other player is choosing category ");
                         output.writeObject("DISABLE");
+                        while (!game.categoryIsPicked) {
+                            Thread.sleep(100);
+                        }
                         state = ROUNDS;
-                        game.legalMove(this);
-                        while (!game.categoryIsPicked){Thread.sleep(20);}
                     }
                 } else if (state == ROUNDS) {
                     while (game.getSelectedCategory() != null) {
@@ -113,17 +108,18 @@ class ServerSidePlayer extends Thread {
                     output.writeObject("POINTS" + "\n" + player + ": " + points + " \n" + opponent.player + ": " + opponent.getPoints());
                     Thread.sleep(2000);
                     if (!game.opponentIsWaiting) {
+                        game.switchCurrentPlayer();
                         game.opponentIsWaiting = true;
                         output.writeObject("MESSAGE Waiting for opponent ");
                         while (game.waitForOpponent) {
-                            Thread.sleep(20);
+                            Thread.sleep(100);
                         }
-                    }
-                    else if (game.opponentIsWaiting){
-                        game.opponentIsWaiting = false;
+                        game.waitForOpponent = true;
+                    } else if (game.opponentIsWaiting) {
                         game.waitForOpponent = false;
                     }
-                    rondnr = 0;
+                    game.categoryIsPicked = false;
+                    game.opponentIsWaiting = false;
                     state = SELECT;
                 }
 
