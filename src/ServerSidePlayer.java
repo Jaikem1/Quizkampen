@@ -3,6 +3,7 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.Collections;
+import java.util.Properties;
 
 class ServerSidePlayer extends Thread {
     ServerSidePlayer opponent;
@@ -51,15 +52,27 @@ class ServerSidePlayer extends Thread {
 
     public void run() {
 
+        Properties p = new Properties();
+
         String userAnswer;
         String pickedCategory = "";
-        int rondnr = 0;
+
+        int settingsQuestionsPerRound;
+        int currentQuestion = 0;
 
 
         try {
 
             // Quiz runda
             while (true) {
+
+                try {
+                    p.load(new FileInputStream("src/Settings.properties"));
+                } catch (IOException e) {
+                    System.out.println("Settings filen hittades ej!");;
+                }
+
+                settingsQuestionsPerRound = Integer.parseInt(p.getProperty("questionsPerRound", "1"));
 
                 output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName());
 
@@ -76,20 +89,20 @@ class ServerSidePlayer extends Thread {
                 }
 
                 while (game.getSelectedCategory() != null) {
-                    output.writeObject(game.getSelectedCategory().getQuestions().get(rondnr));
+                    output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
 
 
                     if ((userAnswer = input.readLine()) != null) {
-                        if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(rondnr).getAnswer())) {
+                        if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(currentQuestion).getAnswer())) {
                             this.points++;
 
                         }
                     }
                     game.legalMove(this);
-                    rondnr++;
+                    currentQuestion++;
                     Thread.sleep(2000);
-                    if (rondnr == 2) {
-                        rondnr = 0;
+                    if (currentQuestion == settingsQuestionsPerRound) {
+                        currentQuestion = 0;
                         output.writeObject("POINTS" + "\n" + player + ": " + points + " \n" + opponent.player + ": " + opponent.getPoints());
                         Thread.sleep(2000);
                         break;

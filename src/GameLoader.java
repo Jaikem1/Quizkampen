@@ -1,10 +1,9 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class GameLoader {
+
 
     public ArrayList<Category> loadGame() {
         ArrayList<Category> categories = new ArrayList<>();
@@ -18,6 +17,7 @@ public class GameLoader {
     }
 
     private Category readCategotyFromFile(String fileName) {
+
         ArrayList<Question> questions = new ArrayList<>();
         String categoryName = new File(fileName).getName();
         Category category = new Category(categoryName, questions);
