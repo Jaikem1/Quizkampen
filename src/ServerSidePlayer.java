@@ -14,6 +14,10 @@ class ServerSidePlayer extends Thread {
     String player;
 
     int points;
+    private final int SELECT = 0;
+    private final int ROUNDS = 1;
+    private final int ENDROUND = 2;
+    private int state = SELECT;
 
 
     public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {
@@ -76,37 +80,60 @@ class ServerSidePlayer extends Thread {
 
                 output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName());
 
-                if (this.equals(game.currentPlayer)) {
-                    output.writeObject("MESSAGE Select a category");
-                    while ((pickedCategory = input.readLine()) != null) {
-                        game.setSelectedCategory(pickedCategory);
-                        Collections.shuffle(game.getSelectedCategory().getQuestions());
-                        break;
+                if (state == SELECT) {
+                    currentQuestion = 0;
+
+                    if (this.equals(game.currentPlayer)) {
+                        output.writeObject("MESSAGE Select a category");
+                        while ((pickedCategory = input.readLine()) != null) {
+                            game.setSelectedCategory(pickedCategory);
+                            Collections.shuffle(game.getSelectedCategory().getQuestions());
+                            game.categoryIsPicked = true;
+                            state = ROUNDS;
+                            break;
+                        }
+                    } else {
+                        output.writeObject("MESSAGE Other player is choosing category ");
+                        output.writeObject("DISABLE");
+                        while (!game.categoryIsPicked) {
+                            Thread.sleep(100);
+                        }
+                        state = ROUNDS;
                     }
-                } else {
-                    output.writeObject("MESSAGE Other player is choosing category ");
-                    output.writeObject("DISABLE");
-                }
-
-                while (game.getSelectedCategory() != null) {
-                    output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
+                } else if (state == ROUNDS) {
+                    while (game.getSelectedCategory() != null) {
+                        output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
 
 
-                    if ((userAnswer = input.readLine()) != null) {
-                        if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(currentQuestion).getAnswer())) {
-                            this.points++;
+                        if ((userAnswer = input.readLine()) != null) {
+                            if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(currentQuestion).getAnswer())) {
+                                this.points++;
 
+                            }
+                        }
+                        currentQuestion++;
+                        if (currentQuestion == settingsQuestionsPerRound) {
+                            state = ENDROUND;
+                            break;
                         }
                     }
-                    game.legalMove(this);
-                    currentQuestion++;
+                } else if (state == ENDROUND) {
+                    output.writeObject("POINTS" + "\n" + player + ": " + points + " \n" + opponent.player + ": " + opponent.getPoints());
                     Thread.sleep(2000);
-                    if (currentQuestion == settingsQuestionsPerRound) {
-                        currentQuestion = 0;
-                        output.writeObject("POINTS" + "\n" + player + ": " + points + " \n" + opponent.player + ": " + opponent.getPoints());
-                        Thread.sleep(2000);
-                        break;
+                    if (!game.opponentIsWaiting) {
+                        game.switchCurrentPlayer();
+                        game.opponentIsWaiting = true;
+                        output.writeObject("MESSAGE Waiting for opponent ");
+                        while (game.waitForOpponent) {
+                            Thread.sleep(100);
+                        }
+                        game.waitForOpponent = true;
+                    } else if (game.opponentIsWaiting) {
+                        game.waitForOpponent = false;
                     }
+                    game.categoryIsPicked = false;
+                    game.opponentIsWaiting = false;
+                    state = SELECT;
                 }
 
 
@@ -125,9 +152,11 @@ class ServerSidePlayer extends Thread {
                 }*/
             }
 
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             System.out.println("Player died: " + e);
-        } catch (InterruptedException e) {
+        } catch (
+                InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
             try {
