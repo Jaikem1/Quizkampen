@@ -118,9 +118,6 @@ class ServerSidePlayer extends Thread {
                     Thread.sleep(2000);
                     if (currentQuestion == settingsQuestionsPerRound) {
                         currentQuestion = 0;
-                        output.writeObject("POINTS" + "\n" + player + ": " + points + " \n" + opponent.player + ": " + opponent.getPoints());
-                    if (rondnr == 2) {
-                        rondnr = 0;
                         this.allRoundPoints.add(this.roundPoints);
                         String pointMsg = "<html>POINTS  <br>" + player + ": " + points + "<br>" +
                                             opponent.player + ": " + opponent.getPoints() + "<br><br>" + getRoundNumber() + "</html>";
