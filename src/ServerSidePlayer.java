@@ -93,7 +93,6 @@ class ServerSidePlayer extends Thread {
                         if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(rondnr).getAnswer())) {
                             this.points++;
                             this.roundPoints++;
-
                         }
                     }
                     game.legalMove(this);
@@ -105,6 +104,7 @@ class ServerSidePlayer extends Thread {
                                             opponent.player + ": " + opponent.getPoints() + "</html>";
                         output.writeObject(pointMsg);
                         Thread.sleep(2000);
+                        allRoundPoints.add(roundPoints);
                         this.roundPoints = 0;
                         break;
                     }
