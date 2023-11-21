@@ -13,6 +13,10 @@ class ServerSidePlayer extends Thread {
     String player;
 
     int points;
+    private final int SELECT = 0;
+    private final int ROUNDS = 1;
+    private final int ENDROUND = 2;
+    private int state = SELECT;
 
 
     public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {
@@ -49,6 +53,12 @@ class ServerSidePlayer extends Thread {
         return String.valueOf(points);
     }
 
+    public synchronized void endOfStateWait() throws InterruptedException {
+        if (this.opponent.getState() == State.WAITING) {
+            notifyAll();
+        } else wait();
+    }
+
     public void run() {
 
         String userAnswer;
@@ -61,39 +71,60 @@ class ServerSidePlayer extends Thread {
             // Quiz runda
             while (true) {
 
+
                 output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName());
 
-                if (this.equals(game.currentPlayer)) {
-                    output.writeObject("MESSAGE Select a category");
-                    while ((pickedCategory = input.readLine()) != null) {
-                        game.setSelectedCategory(pickedCategory);
-                        Collections.shuffle(game.getSelectedCategory().getQuestions());
-                        break;
+                if (state == SELECT) {
+                    if (this.equals(game.currentPlayer)) {
+                        output.writeObject("MESSAGE Select a category");
+                        while ((pickedCategory = input.readLine()) != null) {
+                            game.setSelectedCategory(pickedCategory);
+                            Collections.shuffle(game.getSelectedCategory().getQuestions());
+                            game.categoryIsPicked = true;
+                            state = ROUNDS;
+                            break;
+                        }
+                    } else {
+                        game.categoryIsPicked = false;
+                        output.writeObject("MESSAGE Other player is choosing category ");
+                        output.writeObject("DISABLE");
+                        state = ROUNDS;
+                        game.legalMove(this);
+                        while (!game.categoryIsPicked){Thread.sleep(20);}
                     }
-                } else {
-                    output.writeObject("MESSAGE Other player is choosing category ");
-                    output.writeObject("DISABLE");
-                }
-
-                while (game.getSelectedCategory() != null) {
-                    output.writeObject(game.getSelectedCategory().getQuestions().get(rondnr));
+                } else if (state == ROUNDS) {
+                    while (game.getSelectedCategory() != null) {
+                        output.writeObject(game.getSelectedCategory().getQuestions().get(rondnr));
 
 
-                    if ((userAnswer = input.readLine()) != null) {
-                        if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(rondnr).getAnswer())) {
-                            this.points++;
+                        if ((userAnswer = input.readLine()) != null) {
+                            if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(rondnr).getAnswer())) {
+                                this.points++;
 
+                            }
+                        }
+                        rondnr++;
+                        if (rondnr == 2) {
+                            state = ENDROUND;
+                            break;
                         }
                     }
-                    game.legalMove(this);
-                    rondnr++;
+                } else if (state == ENDROUND) {
+                    output.writeObject("POINTS" + "\n" + player + ": " + points + " \n" + opponent.player + ": " + opponent.getPoints());
                     Thread.sleep(2000);
-                    if (rondnr == 2) {
-                        rondnr = 0;
-                        output.writeObject("POINTS" + "\n" + player + ": " + points + " \n" + opponent.player + ": " + opponent.getPoints());
-                        Thread.sleep(2000);
-                        break;
+                    if (!game.opponentIsWaiting) {
+                        game.opponentIsWaiting = true;
+                        output.writeObject("MESSAGE Waiting for opponent ");
+                        while (game.waitForOpponent) {
+                            Thread.sleep(20);
+                        }
                     }
+                    else if (game.opponentIsWaiting){
+                        game.opponentIsWaiting = false;
+                        game.waitForOpponent = false;
+                    }
+                    rondnr = 0;
+                    state = SELECT;
                 }
 
 
@@ -112,9 +143,11 @@ class ServerSidePlayer extends Thread {
                 }*/
             }
 
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             System.out.println("Player died: " + e);
-        } catch (InterruptedException e) {
+        } catch (
+                InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
             try {

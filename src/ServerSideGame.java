@@ -32,6 +32,9 @@ class ServerSideGame {
      * The current player.
      */
     ServerSidePlayer currentPlayer;
+    public boolean waitForOpponent = true;
+    public boolean opponentIsWaiting = false;
+    public boolean categoryIsPicked = false;
 
 
     public String getMyPoints() {
@@ -40,7 +43,7 @@ class ServerSideGame {
 
 
     public synchronized void legalMove(ServerSidePlayer player) {
-        if (player == currentPlayer) {
+        if (player != currentPlayer) {
             currentPlayer = currentPlayer.getOpponent();
 
         }
