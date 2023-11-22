@@ -73,7 +73,8 @@ class ServerSidePlayer extends Thread {
                 try {
                     p.load(new FileInputStream("src/Settings.properties"));
                 } catch (IOException e) {
-                    System.out.println("Settings filen hittades ej!");;
+                    System.out.println("Settings filen hittades ej!");
+                    ;
                 }
 
                 settingsQuestionsPerRound = Integer.parseInt(p.getProperty("questionsPerRound", "1"));
@@ -101,6 +102,7 @@ class ServerSidePlayer extends Thread {
                         state = ROUNDS;
                     }
                 } else if (state == ROUNDS) {
+                    output.writeObject("CATEGORY" + game.getSelectedCategory().getName());
                     while (game.getSelectedCategory() != null) {
                         output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
 
