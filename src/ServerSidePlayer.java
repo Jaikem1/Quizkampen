@@ -101,10 +101,10 @@ class ServerSidePlayer extends Thread {
             // Quiz runda
             while (true) {
 
-                output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName());
-
                 if (state == SELECT) {
                     currentQuestion = 0;
+                    Collections.shuffle(game.categories);
+                    output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName());
 
                     if (this.equals(game.currentPlayer)) {
                         output.writeObject("MESSAGE Select a category");
@@ -126,6 +126,7 @@ class ServerSidePlayer extends Thread {
                 } else if (state == ROUNDS) {
                     output.writeObject("CATEGORY" + game.getSelectedCategory().getName());
                     while (game.getSelectedCategory() != null) {
+                        Collections.shuffle(game.getSelectedCategory().getQuestions().get(currentQuestion).getAlternatives());
                         output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
 
 
