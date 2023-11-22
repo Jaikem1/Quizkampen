@@ -10,13 +10,13 @@ public class GameLoader {
 
         String[] categoryNames = {"Film", "Geografi", "Musik", "Vetenskap", "Sport"};
         for (String categoryName : categoryNames) {
-            Category category = readCategotyFromFile("src/QuestionFiles/" + categoryName);
+            Category category = readCategoryFromFile("src/QuestionFiles/" + categoryName);
             categories.add(category);
         }
         return categories;
     }
 
-    private Category readCategotyFromFile(String fileName) {
+    private Category readCategoryFromFile(String fileName) {
 
         ArrayList<Question> questions = new ArrayList<>();
         String categoryName = new File(fileName).getName();

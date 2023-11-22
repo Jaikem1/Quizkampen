@@ -126,6 +126,7 @@ class ServerSidePlayer extends Thread {
                 } else if (state == ROUNDS) {
                     output.writeObject("CATEGORY" + game.getSelectedCategory().getName());
                     while (game.getSelectedCategory() != null) {
+                        Collections.shuffle(game.getSelectedCategory().getQuestions().get(currentQuestion).getAlternatives());
                         output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
 
 
