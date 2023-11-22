@@ -1,9 +1,9 @@
+
+
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Properties;
-import java.util.List;
 
 class ServerSidePlayer extends Thread {
     ServerSidePlayer opponent;
@@ -14,9 +14,12 @@ class ServerSidePlayer extends Thread {
     String player;
 
     int points;
-    private int roundPoints = 0;
+    private final int SELECT = 0;
+    private final int ROUNDS = 1;
+    private final int ENDROUND = 2;
+    private int state = SELECT;
+
     private int roundNumber = 0;
-    private List<Integer> allRoundPoints = new ArrayList<>();
 
 
     public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {
@@ -53,21 +56,12 @@ class ServerSidePlayer extends Thread {
         return String.valueOf(points);
     }
 
-    public String getRoundPoints() {
-        return String.valueOf(this.roundPoints);
-    }
-
-    public List<Integer> getAllRoundPoints() {
-        return this.allRoundPoints;
-    }
-
     public int getRoundNumber() {return this.roundNumber;}
 
     public void run() {
 
         Properties p = new Properties();
 
-        roundNumber = allRoundPoints.size() + 1;
         String userAnswer;
         String pickedCategory = "";
 
@@ -79,7 +73,6 @@ class ServerSidePlayer extends Thread {
 
             // Quiz runda
             while (true) {
-                this.roundNumber = allRoundPoints.size() + 1;
 
                 try {
                     p.load(new FileInputStream("src/Settings.properties"));
@@ -91,41 +84,61 @@ class ServerSidePlayer extends Thread {
 
                 output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName());
 
-                if (this.equals(game.currentPlayer)) {
-                    output.writeObject("MESSAGE Select a category");
-                    while ((pickedCategory = input.readLine()) != null) {
-                        game.setSelectedCategory(pickedCategory);
-                        Collections.shuffle(game.getSelectedCategory().getQuestions());
-                        break;
+                if (state == SELECT) {
+                    currentQuestion = 0;
+
+                    if (this.equals(game.currentPlayer)) {
+                        output.writeObject("MESSAGE Select a category");
+                        while ((pickedCategory = input.readLine()) != null) {
+                            game.setSelectedCategory(pickedCategory);
+                            Collections.shuffle(game.getSelectedCategory().getQuestions());
+                            game.categoryIsPicked = true;
+                            state = ROUNDS;
+                            break;
+                        }
+                    } else {
+                        output.writeObject("MESSAGE Other player is choosing category ");
+                        output.writeObject("DISABLE");
+                        while (!game.categoryIsPicked) {
+                            Thread.sleep(100);
+                        }
+                        state = ROUNDS;
                     }
-                } else {
-                    output.writeObject("MESSAGE Other player is choosing category ");
-                    output.writeObject("DISABLE");
-                }
-
-                while (game.getSelectedCategory() != null) {
-                    output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
+                } else if (state == ROUNDS) {
+                    while (game.getSelectedCategory() != null) {
+                        output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
 
 
-                    if ((userAnswer = input.readLine()) != null) {
-                        if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(currentQuestion).getAnswer())) {
-                            this.points++;
-                            this.roundPoints++;
+                        if ((userAnswer = input.readLine()) != null) {
+                            if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(currentQuestion).getAnswer())) {
+                                this.points++;
+
+                            }
+                        }
+                        currentQuestion++;
+                        if (currentQuestion == settingsQuestionsPerRound) {
+                            state = ENDROUND;
+                            break;
                         }
                     }
-                    game.legalMove(this);
-                    currentQuestion++;
+                } else if (state == ENDROUND) {
+                    String pointMsg = "<html>POINTS  <br>" + player + ": " + points + "<br>" +
+                            opponent.player + ": " + opponent.getPoints() + "<br><br>" + getRoundNumber() + "</html>";
                     Thread.sleep(2000);
-                    if (currentQuestion == settingsQuestionsPerRound) {
-                        currentQuestion = 0;
-                        this.allRoundPoints.add(this.roundPoints);
-                        String pointMsg = "<html>POINTS  <br>" + player + ": " + points + "<br>" +
-                                            opponent.player + ": " + opponent.getPoints() + "<br><br>" + getRoundNumber() + "</html>";
-                        output.writeObject(pointMsg);
-                        Thread.sleep(2000);
-                        this.roundPoints = 0;
-                        break;
+                    if (!game.opponentIsWaiting) {
+                        game.switchCurrentPlayer();
+                        game.opponentIsWaiting = true;
+                        output.writeObject("<html>MESSAGE Waiting for opponent<br><br>"+ pointMsg + "</html>");
+                        while (game.waitForOpponent) {
+                            Thread.sleep(100);
+                        }
+                        game.waitForOpponent = true;
+                    } else if (game.opponentIsWaiting) {
+                        game.waitForOpponent = false;
                     }
+                    game.categoryIsPicked = false;
+                    game.opponentIsWaiting = false;
+                    state = SELECT;
                 }
 
 
@@ -144,15 +157,16 @@ class ServerSidePlayer extends Thread {
                 }*/
             }
 
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             System.out.println("Player died: " + e);
-        } catch (InterruptedException e) {
+        } catch (
+                InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
             try {
                 socket.close();
             } catch (IOException e) {
-                System.out.println("Encountered following error: " + e);
             }
         }
     }

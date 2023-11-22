@@ -83,7 +83,7 @@ public class User extends JFrame implements ActionListener {
                         text.setText(message);
                     } else if (message.startsWith("DISABLE")) {
                         disableButtons();
-                    } else if (message.startsWith("<html>POINTS")) {
+                    } else if (message.startsWith("<html>MESSAGE")) {
                         hideButtons();
                         text.setText(message);
                     } else {
