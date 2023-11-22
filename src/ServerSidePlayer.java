@@ -70,6 +70,7 @@ class ServerSidePlayer extends Thread {
         int settingsNumberOfRounds;
         int currentQuestion = 0;
 
+
         try {
             p.load(new FileInputStream("src/Settings.properties"));
         } catch (IOException e) {
@@ -112,6 +113,7 @@ class ServerSidePlayer extends Thread {
                         state = ROUNDS;
                     }
                 } else if (state == ROUNDS) {
+                    output.writeObject("CATEGORY" + game.getSelectedCategory().getName());
                     while (game.getSelectedCategory() != null) {
                         output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
 

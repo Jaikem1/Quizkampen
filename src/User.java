@@ -13,7 +13,7 @@ public class User extends JFrame implements ActionListener {
     JPanel buttonBoard = new JPanel(new GridLayout(2, 2, 2, 2));
     JPanel categoryBoard = new JPanel();
     JLabel text = new JLabel("Frågan som ställs står här");
-    JLabel category = new JLabel("Kategori");
+    JLabel category = new JLabel("Category");
     JButton a = new JButton("alt 1");
     JButton b = new JButton("alt 2");
     JButton c = new JButton("alt 3");
@@ -68,6 +68,7 @@ public class User extends JFrame implements ActionListener {
             in = new ObjectInputStream(socket.getInputStream());
             Object obj;
             while ((obj = in.readObject()) != null) {
+                questionMode = false;
 
                 if (obj instanceof Question) {
                     question = (Question) obj;
@@ -86,7 +87,9 @@ public class User extends JFrame implements ActionListener {
                     } else if (message.startsWith("<html>MESSAGE")) {
                         hideButtons();
                         text.setText(message);
-                    } else {
+                    } else if(message.startsWith("CATEGORY")){
+                        category.setText(message.substring(8));
+                    }else{
                         String[] categories = message.split(" ");
                         resetButtonColors();
                         showButtons();
