@@ -2,7 +2,9 @@
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 class ServerSidePlayer extends Thread {
@@ -20,6 +22,9 @@ class ServerSidePlayer extends Thread {
     private int state = SELECT;
 
     private int roundNumber = 0;
+    private int roundPoints = 0;
+    private List<String> roundScores = new ArrayList<>();
+    private StringBuilder pointsMessage = new StringBuilder();
 
 
     public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {
@@ -56,12 +61,19 @@ class ServerSidePlayer extends Thread {
         return String.valueOf(points);
     }
 
+    public synchronized void setPointsMessage(StringBuilder pointsMessage) {
+        this.pointsMessage = new StringBuilder(pointsMessage);
+    }
+
+    public StringBuilder getPointsMessage() {
+        return pointsMessage;
+    }
+
     public int getRoundNumber() {return this.roundNumber;}
 
     public void run() {
 
         Properties p = new Properties();
-        StringBuilder pointsMessage = new StringBuilder();
 
         String userAnswer;
         String pickedCategory = "";
@@ -69,6 +81,7 @@ class ServerSidePlayer extends Thread {
         int settingsQuestionsPerRound;
         int settingsNumberOfRounds;
         int currentQuestion = 0;
+        boolean pointsMessageSent = false;
 
 
         try {
@@ -80,9 +93,7 @@ class ServerSidePlayer extends Thread {
         settingsQuestionsPerRound = Integer.parseInt(p.getProperty("questionsPerRound", "1"));
         settingsNumberOfRounds = Integer.parseInt(p.getProperty("rounds", "3"));
 
-        for(int i = 1; i <= settingsNumberOfRounds; i++) {
-            pointsMessage.append("<tr><td> - </td><td> Round ").append(i).append("</td><td> - </td>");
-        }
+        for(int i = 1; i <= settingsNumberOfRounds; i++) { roundScores.add("-"); }
 
 
         try {
@@ -121,7 +132,7 @@ class ServerSidePlayer extends Thread {
                         if ((userAnswer = input.readLine()) != null) {
                             if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(currentQuestion).getAnswer())) {
                                 this.points++;
-
+                                this.roundPoints++;
                             }
                         }
                         currentQuestion++;
@@ -131,13 +142,21 @@ class ServerSidePlayer extends Thread {
                         }
                     }
                 } else if (state == ENDROUND) {
+                    setPointsMessage(pointsMessage.delete(0, pointsMessage.length()));
+                    opponent.setPointsMessage(opponent.pointsMessage.delete(0,opponent.pointsMessage.length()));
+                    this.roundScores.set(roundNumber, String.valueOf(roundPoints));
                     this.roundNumber++;
-                    Thread.sleep(2000);
+                    this.roundPoints = 0;
+                    for (int i = 0; i < settingsNumberOfRounds; i++) {
+                        this.pointsMessage.append("<tr><td>").append(roundScores.get(i)).append("</td><td> Round ").append(i+1)
+                                .append("</td><td>").append(opponent.roundScores.get(i)).append("</td>");
+                    }
+                    Thread.sleep(1000);
                     if (!game.opponentIsWaiting) {
                         game.switchCurrentPlayer();
                         game.opponentIsWaiting = true;
-                        output.writeObject("<html>MESSAGE Waiting for opponent<br><br>"
-                                            + "<html>&nbsp;&nbsp;Points <table border=\"0\">"+ pointsMessage
+                        output.writeObject("<html>MESSAGE Waiting for opponent<br><br>" + "Points<br>"
+                                            + points + " - " + opponent.points + "<br><table border=\"0\">"+ getPointsMessage()
                                             + "</table> </html>");
                         while (game.waitForOpponent) {
                             Thread.sleep(100);
