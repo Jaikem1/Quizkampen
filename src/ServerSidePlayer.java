@@ -156,7 +156,7 @@ class ServerSidePlayer extends Thread {
                         game.switchCurrentPlayer();
                         game.opponentIsWaiting = true;
                         output.writeObject("<html>MESSAGE Waiting for opponent<br><br>" + "Points<br>"
-                                            + points + " - " + opponent.points + "<br><table border=\"0\">"+ getPointsMessage()
+                                            + points + " - " + opponent.points + "<br><br><table border=\"0\">"+ getPointsMessage()
                                             + "</table> </html>");
                         while (game.waitForOpponent) {
                             Thread.sleep(100);
