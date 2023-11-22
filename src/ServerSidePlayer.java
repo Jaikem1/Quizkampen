@@ -61,26 +61,33 @@ class ServerSidePlayer extends Thread {
     public void run() {
 
         Properties p = new Properties();
+        StringBuilder pointsMessage = new StringBuilder();
 
         String userAnswer;
         String pickedCategory = "";
 
         int settingsQuestionsPerRound;
+        int settingsNumberOfRounds;
         int currentQuestion = 0;
+
+        try {
+            p.load(new FileInputStream("src/Settings.properties"));
+        } catch (IOException e) {
+            System.out.println("Settings filen hittades ej!");;
+        }
+
+        settingsQuestionsPerRound = Integer.parseInt(p.getProperty("questionsPerRound", "1"));
+        settingsNumberOfRounds = Integer.parseInt(p.getProperty("rounds", "3"));
+
+        for(int i = 1; i <= settingsNumberOfRounds; i++) {
+            pointsMessage.append("<tr><td> - </td><td> Round ").append(i).append("</td><td> - </td>");
+        }
 
 
         try {
 
             // Quiz runda
             while (true) {
-
-                try {
-                    p.load(new FileInputStream("src/Settings.properties"));
-                } catch (IOException e) {
-                    System.out.println("Settings filen hittades ej!");;
-                }
-
-                settingsQuestionsPerRound = Integer.parseInt(p.getProperty("questionsPerRound", "1"));
 
                 output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName());
 
@@ -122,13 +129,14 @@ class ServerSidePlayer extends Thread {
                         }
                     }
                 } else if (state == ENDROUND) {
-                    String pointMsg = "<html>POINTS  <br>" + player + ": " + points + "<br>" +
-                            opponent.player + ": " + opponent.getPoints() + "<br><br>" + getRoundNumber() + "</html>";
+                    this.roundNumber++;
                     Thread.sleep(2000);
                     if (!game.opponentIsWaiting) {
                         game.switchCurrentPlayer();
                         game.opponentIsWaiting = true;
-                        output.writeObject("<html>MESSAGE Waiting for opponent<br><br>"+ pointMsg + "</html>");
+                        output.writeObject("<html>MESSAGE Waiting for opponent<br><br>"
+                                            + "<html>&nbsp;&nbsp;Points <table border=\"0\">"+ pointsMessage
+                                            + "</table> </html>");
                         while (game.waitForOpponent) {
                             Thread.sleep(100);
                         }
