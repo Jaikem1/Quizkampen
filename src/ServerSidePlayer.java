@@ -44,7 +44,7 @@ class ServerSidePlayer extends Thread {
     }
 
     /**
-     * Accepts notification of who the opponent is.
+     * Accepts notification of whom the opponent is.
      */
     public void setOpponent(ServerSidePlayer opponent) {
         this.opponent = opponent;
@@ -57,9 +57,6 @@ class ServerSidePlayer extends Thread {
         return opponent;
     }
 
-    public String getPoints() {
-        return String.valueOf(points);
-    }
 
     public synchronized void setPointsMessage(StringBuilder pointsMessage) {
         this.pointsMessage = new StringBuilder(pointsMessage);
@@ -87,7 +84,7 @@ class ServerSidePlayer extends Thread {
         try {
             p.load(new FileInputStream("src/Settings.properties"));
         } catch (IOException e) {
-            System.out.println("Settings filen hittades ej!");;
+            System.out.println("Settings filen hittades ej!");
         }
 
         settingsQuestionsPerRound = Integer.parseInt(p.getProperty("questionsPerRound", "1"));
@@ -136,6 +133,7 @@ class ServerSidePlayer extends Thread {
                                 this.roundPoints++;
                             }
                         }
+                        Thread.sleep(500);
                         currentQuestion++;
                         if (currentQuestion == settingsQuestionsPerRound) {
                             state = ENDROUND;
@@ -152,7 +150,6 @@ class ServerSidePlayer extends Thread {
                         this.pointsMessage.append("<tr><td>").append(roundScores.get(i)).append("</td><td> Round ").append(i+1)
                                 .append("</td><td>").append(opponent.roundScores.get(i)).append("</td>");
                     }
-                    Thread.sleep(1000);
                     if (!game.opponentIsWaiting) {
                         game.switchCurrentPlayer();
                         game.opponentIsWaiting = true;
@@ -171,20 +168,6 @@ class ServerSidePlayer extends Thread {
                     state = SELECT;
                 }
 
-
-                /*if (userAnswer.startsWith("MOVE")) {
-                    int location = Integer.parseInt(userAnswer.substring(5));
-                    if (game.legalMove(location, this)) {
-                        output.println("VALID_MOVE");
-                        output.println(game.hasWinner() ? "VICTORY"
-                                : game.boardFilledUp() ? "TIE"
-                                : "");
-                    } else {
-                        output.println("MESSAGE ?");
-                    }
-                } else if (userAnswer.startsWith("QUIT")) {
-                    return;
-                }*/
             }
 
         } catch (
@@ -197,6 +180,7 @@ class ServerSidePlayer extends Thread {
             try {
                 socket.close();
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

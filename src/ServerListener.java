@@ -13,7 +13,7 @@ public class ServerListener {
         while (true) {
             ServerSideGame game = new ServerSideGame(categories);
 
-            try (ServerSocket serverSocket = new ServerSocket(55565);) {
+            try (ServerSocket serverSocket = new ServerSocket(55565)) {
 
                 ServerSidePlayer player1 = new ServerSidePlayer(serverSocket.accept(), game, "player1");
                 ServerSidePlayer player2 = new ServerSidePlayer(serverSocket.accept(), game, "player2");
