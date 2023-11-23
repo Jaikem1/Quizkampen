@@ -19,10 +19,10 @@ public class User extends JFrame implements ActionListener {
     JPanel categoryBoard = new JPanel();
     JLabel text = new JLabel("Frågan som ställs står här");
     JLabel category = new JLabel("Welcome");
-    JButton a = new JButton("alt 1");
-    JButton b = new JButton("alt 2");
-    JButton c = new JButton("alt 3");
-    JButton d = new JButton("alt 4");
+    JButton a = new JButton("");
+    JButton b = new JButton("");
+    JButton c = new JButton("");
+    JButton d = new JButton("");
     PrintWriter out;
     ObjectInputStream in;
     Question question;
