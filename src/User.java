@@ -10,11 +10,11 @@ import java.util.ArrayList;
 
 public class User extends JFrame implements ActionListener {
 
-    private final ImageIcon buttonIcon = new ImageIcon("src/Resources/purple_love.png");//*********Knappform
-    private final ImageIcon buttonIconWrong = new ImageIcon("src/Resources/red_love.png");//*********Knappform
-    private final ImageIcon buttonIconRight = new ImageIcon("src/Resources/green_love.png");//*********Knappform
+    private final ImageIcon buttonIcon = new ImageIcon("src/Resources/purple_love.png");
+    private final ImageIcon buttonIconWrong = new ImageIcon("src/Resources/red_love.png");
+    private final ImageIcon buttonIconRight = new ImageIcon("src/Resources/green_love.png");
 
-    Color stateBlue = new Color(106, 90, 205);//*************************************Bakgrundsfärg
+    Color purpleColor = new Color(106, 90, 205);
     JPanel buttonBoard = new JPanel(new GridLayout(2, 2));
     JPanel categoryBoard = new JPanel();
     JLabel text = new JLabel("Frågan som ställs står här");
@@ -58,8 +58,9 @@ public class User extends JFrame implements ActionListener {
         }
 
         text.setForeground(Color.WHITE);
-        getContentPane().setBackground(stateBlue);
+        getContentPane().setBackground(purpleColor);
         designButtons();
+        hideButtons();
 
 
         setSize(500, 350);
@@ -83,7 +84,7 @@ public class User extends JFrame implements ActionListener {
                     this.question = question;
                     paintQuestion();
                     questionMode = true;
-                    enableButtons();
+                    showButtons();
                     resetButtonColors();
 
                 } else {
@@ -91,7 +92,7 @@ public class User extends JFrame implements ActionListener {
                     if (message.startsWith("MESSAGE")) {
                         text.setText(message);
                     } else if (message.startsWith("DISABLE")) {
-                        disableButtons();
+                        hideButtons();
                     } else if (message.startsWith("<html>MESSAGE")) {
                         hideButtons();
                         text.setText(message);
@@ -145,20 +146,7 @@ public class User extends JFrame implements ActionListener {
 
     public void resetButtonColors() {
         for (JButton button : buttons) {
-            button.setIcon(buttonIcon); //****************************************** Står text kvar?
-        }
-    }
-
-
-    public void enableButtons() {
-        for (JButton button : buttons) {
-            button.setEnabled(true);
-        }
-    }
-
-    public void disableButtons() {
-        for (JButton button : buttons) {
-            button.setEnabled(false);
+            button.setIcon(buttonIcon);
         }
     }
 
@@ -182,12 +170,10 @@ public class User extends JFrame implements ActionListener {
             button.setHorizontalTextPosition(JButton.CENTER);
             //hanterar färgen
             button.setForeground(Color.white);
-            button.setBackground(stateBlue);
-            button.getParent().setBackground(stateBlue);
-
-            button.setFocusable(false);
-            button.setBorderPainted(true);
-
+            button.setBackground(purpleColor); //utfyllnad runt knapp samma som bakgrund
+            button.getParent().setBackground(purpleColor); //Gör så det inte blir vitt mellan rundorna
+            button.setFocusable(false);//Målar inte ut en ram när man står över knapp
+            button.setBorderPainted(false);//Gör så det inte blir vitt mellan knapparna
             button.setContentAreaFilled(false);
             button.setOpaque(true);
         }
