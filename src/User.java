@@ -7,22 +7,27 @@ import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class User extends JFrame implements ActionListener {
-    JPanel buttonBoard = new JPanel(new GridLayout(2, 2, 2, 2));
+
+    private final ImageIcon buttonIcon = new ImageIcon("purple_love.png");//*********Knappform
+    private final ImageIcon buttonIconWrong = new ImageIcon("green_love.png");//*********Knappform
+    private final ImageIcon buttonIconRight = new ImageIcon("red_love.png");//*********Knappform
+
+    Color stateBlue = new Color(106, 90, 205);//*************************************Bakgrundsfärg
+    JPanel buttonBoard = new JPanel(new GridLayout(2, 2));
     JPanel categoryBoard = new JPanel();
     JLabel text = new JLabel("Frågan som ställs står här");
-    JLabel category = new JLabel("Category");
-    JButton a = new JButton("alt 1");
-    JButton b = new JButton("alt 2");
-    JButton c = new JButton("alt 3");
-    JButton d = new JButton("alt 4");
+    JLabel category = new JLabel("Welcome");
+    JButton a = new JButton("ett");
+    JButton b = new JButton("två ord");
+    JButton c = new JButton("tredje ordet");
+    JButton d = new JButton("fjärde ordet tillslut");
     PrintWriter out;
     ObjectInputStream in;
     Question question;
     Boolean questionMode = false;
-    Color normal = a.getBackground();
+
     ArrayList<JButton> buttons = new ArrayList<>();
 
     public User() {
@@ -51,12 +56,16 @@ public class User extends JFrame implements ActionListener {
             button.addActionListener(this);
         }
 
+        text.setForeground(Color.WHITE);
+        getContentPane().setBackground(stateBlue);
+        //buttonBoard.setBackground(stateBlue);//Funkar inte som tänkt
+        designButtons();//***************************************************
+
 
         setSize(500, 350);
         setLocationRelativeTo(null);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-
 
         String message;
         Question question;
@@ -86,9 +95,9 @@ public class User extends JFrame implements ActionListener {
                     } else if (message.startsWith("POINTS")) {
                         hideButtons();
                         text.setText(message);
-                    } else if(message.startsWith("CATEGORY")){
+                    } else if (message.startsWith("CATEGORY")) {
                         category.setText(message.substring(8));
-                    }else{
+                    } else {
                         String[] categories = message.split(" ");
                         resetButtonColors();
                         showButtons();
@@ -96,6 +105,7 @@ public class User extends JFrame implements ActionListener {
                         b.setText(categories[1]);
                         c.setText("");
                         d.setText("");
+
 
                     }
                 }
@@ -113,10 +123,11 @@ public class User extends JFrame implements ActionListener {
         out.println(e.getActionCommand());
         if (questionMode) {
             if (e.getActionCommand().equals(question.getAnswer())) {
-                button.setBackground(Color.GREEN);
+                button.setIcon(buttonIconRight);
+
 
             } else {
-                button.setBackground(Color.PINK);
+                button.setIcon(buttonIconWrong);
             }
         }
 
@@ -128,13 +139,16 @@ public class User extends JFrame implements ActionListener {
         b.setText(question.getAlternatives().get(1));
         c.setText(question.getAlternatives().get(2));
         d.setText(question.getAlternatives().get(3));
-    }
+
+
+        }
 
     public void resetButtonColors() {
         for (JButton button : buttons) {
-            button.setBackground(normal);
+            button.setIcon(buttonIcon); //****************************************** Står text kvar?
         }
     }
+
 
     public void enableButtons() {
         for (JButton button : buttons) {
@@ -159,6 +173,26 @@ public class User extends JFrame implements ActionListener {
             button.setVisible(true);
         }
     }
+
+    public void designButtons() {
+
+        for (JButton button : buttons) {
+            //centrerar texten
+            button.setIcon(buttonIcon);
+            button.setHorizontalTextPosition(JButton.CENTER);
+            //hanterar färgen
+            button.setForeground(Color.white);
+            button.setBackground(stateBlue);
+
+            button.setFocusable(false);
+            button.setBorderPainted(true);
+
+            button.setContentAreaFilled(false);
+            button.setOpaque(true);
+        }
+
+    }
+
 
 
     public static void main(String[] args) {
