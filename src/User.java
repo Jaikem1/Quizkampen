@@ -80,6 +80,7 @@ public class User extends JFrame implements ActionListener {
                 } else {
                     message = (String) obj;
                     if (message.startsWith("MESSAGE")) {
+                        showButtons();
                         text.setText(message);
                     } else if (message.startsWith("DISABLE")) {
                         disableButtons();
