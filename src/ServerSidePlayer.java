@@ -44,7 +44,7 @@ class ServerSidePlayer extends Thread {
     }
 
     /**
-     * Accepts notification of who the opponent is.
+     * Accepts notification of whom the opponent is.
      */
     public void setOpponent(ServerSidePlayer opponent) {
         this.opponent = opponent;
@@ -57,9 +57,6 @@ class ServerSidePlayer extends Thread {
         return opponent;
     }
 
-    public String getPoints() {
-        return String.valueOf(points);
-    }
 
     public synchronized void setPointsMessage(StringBuilder pointsMessage) {
         this.pointsMessage = new StringBuilder(pointsMessage);
@@ -136,6 +133,7 @@ class ServerSidePlayer extends Thread {
                                 this.roundPoints++;
                             }
                         }
+                        Thread.sleep(500);
                         currentQuestion++;
                         if (currentQuestion == settingsQuestionsPerRound) {
                             state = ENDROUND;
