@@ -2,7 +2,9 @@
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 class ServerSidePlayer extends Thread {
@@ -18,6 +20,11 @@ class ServerSidePlayer extends Thread {
     private final int ROUNDS = 1;
     private final int ENDROUND = 2;
     private int state = SELECT;
+
+    private int roundNumber = 0;
+    private int roundPoints = 0;
+    private List<String> roundScores = new ArrayList<>();
+    private StringBuilder pointsMessage = new StringBuilder();
 
 
     public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {
@@ -37,7 +44,7 @@ class ServerSidePlayer extends Thread {
     }
 
     /**
-     * Accepts notification of who the opponent is.
+     * Accepts notification of whom the opponent is.
      */
     public void setOpponent(ServerSidePlayer opponent) {
         this.opponent = opponent;
@@ -50,9 +57,16 @@ class ServerSidePlayer extends Thread {
         return opponent;
     }
 
-    public String getPoints() {
-        return String.valueOf(points);
+
+    public synchronized void setPointsMessage(StringBuilder pointsMessage) {
+        this.pointsMessage = new StringBuilder(pointsMessage);
     }
+
+    public StringBuilder getPointsMessage() {
+        return pointsMessage;
+    }
+
+    public int getRoundNumber() {return this.roundNumber;}
 
     public void run() {
 
@@ -62,7 +76,21 @@ class ServerSidePlayer extends Thread {
         String pickedCategory = "";
 
         int settingsQuestionsPerRound;
+        int settingsNumberOfRounds;
         int currentQuestion = 0;
+        boolean pointsMessageSent = false;
+
+
+        try {
+            p.load(new FileInputStream("src/Settings.properties"));
+        } catch (IOException e) {
+            System.out.println("Settings filen hittades ej!");
+        }
+
+        settingsQuestionsPerRound = Integer.parseInt(p.getProperty("questionsPerRound", "1"));
+        settingsNumberOfRounds = Integer.parseInt(p.getProperty("rounds", "3"));
+
+        for(int i = 1; i <= settingsNumberOfRounds; i++) { roundScores.add("-"); }
 
 
         try {
@@ -70,19 +98,10 @@ class ServerSidePlayer extends Thread {
             // Quiz runda
             while (true) {
 
-                try {
-                    p.load(new FileInputStream("src/Settings.properties"));
-                } catch (IOException e) {
-                    System.out.println("Settings filen hittades ej!");
-                    ;
-                }
-
-                settingsQuestionsPerRound = Integer.parseInt(p.getProperty("questionsPerRound", "1"));
-
-                output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName());
-
                 if (state == SELECT) {
                     currentQuestion = 0;
+                    Collections.shuffle(game.categories);
+                    output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName());
 
                     if (this.equals(game.currentPlayer)) {
                         output.writeObject("MESSAGE Select a category");
@@ -104,15 +123,17 @@ class ServerSidePlayer extends Thread {
                 } else if (state == ROUNDS) {
                     output.writeObject("CATEGORY" + game.getSelectedCategory().getName());
                     while (game.getSelectedCategory() != null) {
+                        Collections.shuffle(game.getSelectedCategory().getQuestions().get(currentQuestion).getAlternatives());
                         output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
 
 
                         if ((userAnswer = input.readLine()) != null) {
                             if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(currentQuestion).getAnswer())) {
                                 this.points++;
-
+                                this.roundPoints++;
                             }
                         }
+                        Thread.sleep(500);
                         currentQuestion++;
                         if (currentQuestion == settingsQuestionsPerRound) {
                             state = ENDROUND;
@@ -120,12 +141,21 @@ class ServerSidePlayer extends Thread {
                         }
                     }
                 } else if (state == ENDROUND) {
-                    output.writeObject("POINTS" + "\n" + player + ": " + points + " \n" + opponent.player + ": " + opponent.getPoints());
-                    Thread.sleep(2000);
+                    setPointsMessage(pointsMessage.delete(0, pointsMessage.length()));
+                    opponent.setPointsMessage(opponent.pointsMessage.delete(0,opponent.pointsMessage.length()));
+                    this.roundScores.set(roundNumber, String.valueOf(roundPoints));
+                    this.roundNumber++;
+                    this.roundPoints = 0;
+                    for (int i = 0; i < settingsNumberOfRounds; i++) {
+                        this.pointsMessage.append("<tr><td>").append(roundScores.get(i)).append("</td><td> Round ").append(i+1)
+                                .append("</td><td>").append(opponent.roundScores.get(i)).append("</td>");
+                    }
                     if (!game.opponentIsWaiting) {
                         game.switchCurrentPlayer();
                         game.opponentIsWaiting = true;
-                        output.writeObject("MESSAGE Waiting for opponent ");
+                        output.writeObject("<html>MESSAGE Waiting for opponent<br><br>" + "Points<br>"
+                                            + points + " - " + opponent.points + "<br><br><table border=\"0\">"+ getPointsMessage()
+                                            + "</table> </html>");
                         while (game.waitForOpponent) {
                             Thread.sleep(100);
                         }
@@ -138,20 +168,6 @@ class ServerSidePlayer extends Thread {
                     state = SELECT;
                 }
 
-
-                /*if (userAnswer.startsWith("MOVE")) {
-                    int location = Integer.parseInt(userAnswer.substring(5));
-                    if (game.legalMove(location, this)) {
-                        output.println("VALID_MOVE");
-                        output.println(game.hasWinner() ? "VICTORY"
-                                : game.boardFilledUp() ? "TIE"
-                                : "");
-                    } else {
-                        output.println("MESSAGE ?");
-                    }
-                } else if (userAnswer.startsWith("QUIT")) {
-                    return;
-                }*/
             }
 
         } catch (
@@ -164,6 +180,7 @@ class ServerSidePlayer extends Thread {
             try {
                 socket.close();
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
