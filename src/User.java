@@ -105,8 +105,8 @@ public class User extends JFrame implements ActionListener {
                         showButtons();
                         a.setText(categories[0]);
                         b.setText(categories[1]);
-                        c.setText("");
-                        d.setText("");
+                        c.setText(categories[2]);
+                        d.setText(categories[3]);
 
                     }
                 }
