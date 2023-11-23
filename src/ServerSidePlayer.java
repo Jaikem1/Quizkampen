@@ -94,8 +94,8 @@ class ServerSidePlayer extends Thread {
                 if (state == SELECT) {
                     currentQuestion = 0;
                     Collections.shuffle(game.categories);
-                    output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName()
-                            + " " + game.categories.get(2).getName() + " " + game.categories.get(3).getName());
+                    output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName() +
+                            " " + game.categories.get(2).getName() + " " + game.categories.get(3).getName());
 
                     if (this.equals(game.currentPlayer)) {
                         output.writeObject("MESSAGE Select a category");

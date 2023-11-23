@@ -62,12 +62,10 @@ public class User extends JFrame implements ActionListener {
         designButtons();
         hideButtons();
 
-
         setSize(500, 350);
         setLocationRelativeTo(null);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-
 
         String message;
         Question question;
@@ -107,7 +105,6 @@ public class User extends JFrame implements ActionListener {
                         b.setText(categories[1]);
                         c.setText(categories[2]);
                         d.setText(categories[3]);
-
                     }
                 }
             }
@@ -126,12 +123,10 @@ public class User extends JFrame implements ActionListener {
             if (e.getActionCommand().equals(question.getAnswer())) {
                 button.setIcon(buttonIconRight);
 
-
             } else {
                 button.setIcon(buttonIconWrong);
             }
         }
-
     }
 
     public void paintQuestion() {
