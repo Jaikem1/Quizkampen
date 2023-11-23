@@ -9,10 +9,16 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class User extends JFrame implements ActionListener {
-    JPanel buttonBoard = new JPanel(new GridLayout(2, 2, 2, 2));
+
+    private final ImageIcon buttonIcon = new ImageIcon("src/Resources/purple_love.png");
+    private final ImageIcon buttonIconWrong = new ImageIcon("src/Resources/red_love.png");
+    private final ImageIcon buttonIconRight = new ImageIcon("src/Resources/green_love.png");
+
+    Color purpleColor = new Color(106, 90, 205);
+    JPanel buttonBoard = new JPanel(new GridLayout(2, 2));
     JPanel categoryBoard = new JPanel();
     JLabel text = new JLabel("Frågan som ställs står här");
-    JLabel category = new JLabel("Category");
+    JLabel category = new JLabel("Welcome");
     JButton a = new JButton("alt 1");
     JButton b = new JButton("alt 2");
     JButton c = new JButton("alt 3");
@@ -21,7 +27,7 @@ public class User extends JFrame implements ActionListener {
     ObjectInputStream in;
     Question question;
     Boolean questionMode = false;
-    Color normal = a.getBackground();
+
     ArrayList<JButton> buttons = new ArrayList<>();
 
 
@@ -51,6 +57,11 @@ public class User extends JFrame implements ActionListener {
             button.addActionListener(this);
         }
 
+        text.setForeground(Color.WHITE);
+        getContentPane().setBackground(purpleColor);
+        designButtons();
+        hideButtons();
+
 
         setSize(500, 350);
         setLocationRelativeTo(null);
@@ -74,7 +85,7 @@ public class User extends JFrame implements ActionListener {
                     this.question = question;
                     paintQuestion();
                     questionMode = true;
-                    enableButtons();
+                    showButtons();
                     resetButtonColors();
 
                 } else {
@@ -82,7 +93,7 @@ public class User extends JFrame implements ActionListener {
                     if (message.startsWith("MESSAGE")) {
                         text.setText(message);
                     } else if (message.startsWith("DISABLE")) {
-                        disableButtons();
+                        hideButtons();
                     } else if (message.startsWith("<html>MESSAGE")) {
                         hideButtons();
                         text.setText(message);
@@ -113,10 +124,11 @@ public class User extends JFrame implements ActionListener {
         out.println(e.getActionCommand());
         if (questionMode) {
             if (e.getActionCommand().equals(question.getAnswer())) {
-                button.setBackground(Color.GREEN);
+                button.setIcon(buttonIconRight);
+
 
             } else {
-                button.setBackground(Color.PINK);
+                button.setIcon(buttonIconWrong);
             }
         }
 
@@ -132,19 +144,7 @@ public class User extends JFrame implements ActionListener {
 
     public void resetButtonColors() {
         for (JButton button : buttons) {
-            button.setBackground(normal);
-        }
-    }
-
-    public void enableButtons() {
-        for (JButton button : buttons) {
-            button.setEnabled(true);
-        }
-    }
-
-    public void disableButtons() {
-        for (JButton button : buttons) {
-            button.setEnabled(false);
+            button.setIcon(buttonIcon);
         }
     }
 
@@ -159,6 +159,25 @@ public class User extends JFrame implements ActionListener {
             button.setVisible(true);
         }
     }
+
+    public void designButtons() {
+
+        for (JButton button : buttons) {
+            //centrerar texten
+            button.setIcon(buttonIcon);
+            button.setHorizontalTextPosition(JButton.CENTER);
+            //hanterar färgen
+            button.setForeground(Color.white);
+            button.setBackground(purpleColor); //utfyllnad runt knapp samma som bakgrund
+            button.getParent().setBackground(purpleColor); //Gör så det inte blir vitt mellan rundorna
+            button.setFocusable(false);//Målar inte ut en ram när man står över knapp
+            button.setBorderPainted(false);//Gör så det inte blir vitt mellan knapparna
+            button.setContentAreaFilled(false);
+            button.setOpaque(true);
+        }
+
+    }
+
 
 
     public static void main(String[] args) {
