@@ -7,7 +7,7 @@ class ServerSideGame {
     ArrayList<Category> categories = new ArrayList<>();
     Category selectedCategory;
     int points = 0;
-    int oponentpoints = 0;
+    int opponentPoints = 0;
 
 
     public ServerSideGame(ArrayList<Category> categories) {

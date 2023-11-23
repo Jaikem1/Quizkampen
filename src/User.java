@@ -7,7 +7,6 @@ import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class User extends JFrame implements ActionListener {
     JPanel buttonBoard = new JPanel(new GridLayout(2, 2, 2, 2));
@@ -87,9 +86,9 @@ public class User extends JFrame implements ActionListener {
                     } else if (message.startsWith("<html>MESSAGE")) {
                         hideButtons();
                         text.setText(message);
-                    } else if(message.startsWith("CATEGORY")){
+                    } else if (message.startsWith("CATEGORY")) {
                         category.setText(message.substring(8));
-                    }else{
+                    } else {
                         String[] categories = message.split(" ");
                         resetButtonColors();
                         showButtons();
