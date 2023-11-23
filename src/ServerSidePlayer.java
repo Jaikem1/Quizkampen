@@ -19,7 +19,6 @@ class ServerSidePlayer extends Thread {
     private final int SELECT = 0;
     private final int ROUNDS = 1;
     private final int ENDROUND = 2;
-
     private final int BETWEEN = 3;
     private int state = SELECT;
 
@@ -58,8 +57,6 @@ class ServerSidePlayer extends Thread {
     public ServerSidePlayer getOpponent() {
         return opponent;
     }
-
-
     public synchronized void setPointsMessage(StringBuilder pointsMessage) {
         this.pointsMessage = new StringBuilder(pointsMessage);
     }
@@ -67,9 +64,6 @@ class ServerSidePlayer extends Thread {
     public StringBuilder getPointsMessage() {
         return pointsMessage;
     }
-
-    public int getRoundNumber() {return this.roundNumber;}
-
     public void run() {
 
         Properties p = new Properties();
@@ -80,8 +74,6 @@ class ServerSidePlayer extends Thread {
         int settingsQuestionsPerRound;
         int settingsNumberOfRounds;
         int currentQuestion = 0;
-        boolean pointsMessageSent = false;
-
 
         try {
             p.load(new FileInputStream("src/Settings.properties"));
@@ -93,7 +85,6 @@ class ServerSidePlayer extends Thread {
         settingsNumberOfRounds = Integer.parseInt(p.getProperty("rounds", "3"));
 
         for(int i = 1; i <= settingsNumberOfRounds; i++) { roundScores.add("-"); }
-
 
         try {
 
@@ -144,7 +135,6 @@ class ServerSidePlayer extends Thread {
                     }
                 } else if (state == ENDROUND) {
                     setPointsMessage(pointsMessage.delete(0, pointsMessage.length()));
-                    //opponent.setPointsMessage(opponent.pointsMessage.delete(0,opponent.pointsMessage.length()));
                     this.roundScores.set(roundNumber, String.valueOf(roundPoints));
                     this.roundNumber++;
                     this.roundPoints = 0;
