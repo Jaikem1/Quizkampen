@@ -16,6 +16,7 @@ public class User extends JFrame implements ActionListener {
 
 
     Color backgroundColor = new Color(106, 90, 205);
+    Color messageColor = new Color(72, 61, 139);
     JPanel buttonBoard = new JPanel(new GridLayout(2, 2));
     JPanel categoryBoard = new JPanel();
     JLabel text = new JLabel("Frågan som ställs står här");
@@ -87,6 +88,7 @@ public class User extends JFrame implements ActionListener {
 
                 } else {
                     category.setText("MESSAGE");
+                    categoryBoard.setBackground(messageColor);
                     message = (String) obj;
                     if (message.startsWith("MESSAGE")) {
                         text.setText(message.substring(8));
@@ -97,6 +99,7 @@ public class User extends JFrame implements ActionListener {
                         text.setText("<html>" + message.substring(14));
                     } else if (message.startsWith("CATEGORY")) {
                         category.setText(message.substring(8));
+                        categoryBoard.setBackground(Color.ORANGE);
                     } else {
                         String[] categories = message.split(" ");
                         resetButtonColors();
