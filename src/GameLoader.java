@@ -7,7 +7,7 @@ public class GameLoader {
     public ArrayList<Category> loadGame() {
         ArrayList<Category> categories = new ArrayList<>();
 
-        String[] categoryNames = {"Film", "Geografi", "Musik", "Vetenskap", "Sport"};
+        String[] categoryNames = {"Film", "Geografi", "Musik", "Vetenskap", "Sport", "Mat", "Dataspel", "Språk"};
         for (String categoryName : categoryNames) {
             Category category = readCategoryFromFile("src/QuestionFiles/" + categoryName);
             categories.add(category);
