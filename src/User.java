@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class User extends JFrame implements ActionListener {
 
@@ -62,12 +63,10 @@ public class User extends JFrame implements ActionListener {
         designButtons();
         hideButtons();
 
-
         setSize(500, 350);
         setLocationRelativeTo(null);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-
 
         String message;
         Question question;
@@ -88,6 +87,7 @@ public class User extends JFrame implements ActionListener {
                     showButtons();
                     resetButtonColors();
 
+
                 } else {
                     message = (String) obj;
                     if (message.startsWith("MESSAGE")) {
@@ -105,9 +105,8 @@ public class User extends JFrame implements ActionListener {
                         showButtons();
                         a.setText(categories[0]);
                         b.setText(categories[1]);
-                        c.setText("");
-                        d.setText("");
-
+                        c.setText(categories[2]);
+                        d.setText(categories[3]);
                     }
                 }
             }
@@ -126,12 +125,10 @@ public class User extends JFrame implements ActionListener {
             if (e.getActionCommand().equals(question.getAnswer())) {
                 button.setIcon(buttonIconRight);
 
-
             } else {
                 button.setIcon(buttonIconWrong);
             }
         }
-
     }
 
     public void paintQuestion() {
