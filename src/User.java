@@ -87,6 +87,7 @@ public class User extends JFrame implements ActionListener {
                     showButtons();
                     resetButtonColors();
 
+
                 } else {
                     message = (String) obj;
                     if (message.startsWith("MESSAGE")) {
