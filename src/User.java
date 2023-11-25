@@ -13,11 +13,15 @@ public class User extends JFrame implements ActionListener {
     private final ImageIcon buttonIconSelect = new ImageIcon("src/Resources/purple_love.png");
     private final ImageIcon buttonIconWrong = new ImageIcon("src/Resources/red_love.png");
     private final ImageIcon buttonIconRight = new ImageIcon("src/Resources/green_love.png");
+    private final ImageIcon starsLeft = new ImageIcon("src/Resources/Three stars left.png");
+    private final ImageIcon starsRight = new ImageIcon("src/Resources/Three stars right.png");
 
     Color backgroundColor = new Color(106, 90, 205);
     Color messageColor = new Color(72, 61, 139);
     JPanel buttonBoard = new JPanel(new GridLayout(2, 2));
-    JPanel categoryBoard = new JPanel();
+    JPanel categoryBoard = new JPanel(new GridLayout(1,3));
+    JLabel left = new JLabel();
+    JLabel right = new JLabel();
     JLabel text = new JLabel("Frågan som ställs står här");
     JLabel category = new JLabel("Welcome");
     JButton a = new JButton("alt 1");
@@ -35,8 +39,14 @@ public class User extends JFrame implements ActionListener {
 
         setTitle("Quiz Game");
         getContentPane().setBackground(backgroundColor);
-
+        left.setIcon(starsLeft);
+        right.setIcon(starsRight);
+        left.setHorizontalAlignment(SwingConstants.CENTER);
+        category.setHorizontalAlignment(SwingConstants.CENTER);
+        right.setHorizontalAlignment(SwingConstants.CENTER);
+        categoryBoard.add(left);
         categoryBoard.add(category);
+        categoryBoard.add(right);
         add(categoryBoard, BorderLayout.NORTH);
 
         add(text);
