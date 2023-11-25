@@ -7,14 +7,12 @@ import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class User extends JFrame implements ActionListener {
 
-    private final ImageIcon buttonIcon = new ImageIcon("src/Resources/purple_love.png");
+    private final ImageIcon buttonIconSelect = new ImageIcon("src/Resources/purple_love.png");
     private final ImageIcon buttonIconWrong = new ImageIcon("src/Resources/red_love.png");
     private final ImageIcon buttonIconRight = new ImageIcon("src/Resources/green_love.png");
-
 
     Color backgroundColor = new Color(106, 90, 205);
     Color messageColor = new Color(72, 61, 139);
@@ -40,7 +38,6 @@ public class User extends JFrame implements ActionListener {
 
         categoryBoard.add(category);
         add(categoryBoard, BorderLayout.NORTH);
-        categoryBoard.setBackground(Color.ORANGE);
 
         add(text);
         text.setHorizontalAlignment(SwingConstants.CENTER);
@@ -86,7 +83,8 @@ public class User extends JFrame implements ActionListener {
                     resetButtonColors();
 
                 } else {
-                    category.setText("MESSAGE");
+                    category.setText("MESSAGE");// Syns inte då text är samma färg som bakgrund. Text behövs för att label ska målas ut korrekt.
+                    category.setForeground(messageColor);
                     categoryBoard.setBackground(messageColor);
                     message = (String) obj;
                     if (message.startsWith("MESSAGE")) {
@@ -139,7 +137,7 @@ public class User extends JFrame implements ActionListener {
 
     public void resetButtonColors() {
         for (JButton button : buttons) {
-            button.setIcon(buttonIcon);
+            button.setIcon(buttonIconSelect);
         }
     }
 
@@ -159,7 +157,7 @@ public class User extends JFrame implements ActionListener {
 
         for (JButton button : buttons) {
             //centrerar texten
-            button.setIcon(buttonIcon);
+            button.setIcon(buttonIconSelect);
             button.setHorizontalTextPosition(JButton.CENTER);
             //hanterar färgen
             button.setForeground(Color.white);
