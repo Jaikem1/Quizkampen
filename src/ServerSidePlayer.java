@@ -20,8 +20,8 @@ class ServerSidePlayer extends Thread {
     private final int ROUNDS = 1;
     private final int ENDROUND = 2;
     private final int BETWEEN = 3;
+    private final int ENDGAME = 4;
     private int state = SELECT;
-
     private int roundNumber = 0;
     private int roundPoints = 0;
     private List<String> roundScores = new ArrayList<>();
@@ -158,14 +158,31 @@ class ServerSidePlayer extends Thread {
                     state = BETWEEN;
                 }
                 else if (state == BETWEEN) {
+
                     for (int i = 0; i < settingsNumberOfRounds; i++) {
                         this.pointsMessage.append("<tr><td>").append(roundScores.get(i)).append("</td><td> Round ").append(i+1)
                                 .append("</td><td>").append(opponent.roundScores.get(i)).append("</td>");
                     }
                     output.writeObject("<html>MESSAGE Points<br><br><table border=\"0\"><tr><td>"
                                         + points + "</td><td>Total</td><td>"+ opponent.points + "</td></tr>" + getPointsMessage());
-                    Thread.sleep(5000);
-                    state = SELECT;
+
+                    if (roundNumber == settingsNumberOfRounds){
+                        state = ENDGAME;
+                    } else {
+                        Thread.sleep(5000);
+                        state = SELECT;
+                    }
+                }
+                else if (state == ENDGAME) {
+
+                    if (points > opponent.points){
+                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> DU VANN! <br><br>");
+                    }
+                    else{
+                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Du förlorade :( <br><br>");
+                    }
+                    Thread.sleep(10000);
+                    socket.close();
                 }
             }
         } catch (
