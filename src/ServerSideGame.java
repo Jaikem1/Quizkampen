@@ -15,7 +15,6 @@ class ServerSideGame {
 
     }
 
-
     /**
      * The current player.
      */

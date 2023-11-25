@@ -3,11 +3,11 @@ import java.util.ArrayList;
 
 public class GameLoader {
 
-
+    // Metod för att ladda spelkategorier från filer
     public ArrayList<Category> loadGame() {
         ArrayList<Category> categories = new ArrayList<>();
 
-        String[] categoryNames = {"Film", "Geografi", "Musik", "Vetenskap", "Sport"};
+        String[] categoryNames = {"Film", "Geografi", "Musik", "Vetenskap", "Sport", "Mat", "Dataspel", "Språk"};
         for (String categoryName : categoryNames) {
             Category category = readCategoryFromFile("src/QuestionFiles/" + categoryName);
             categories.add(category);
@@ -15,6 +15,7 @@ public class GameLoader {
         return categories;
     }
 
+    // Metod för att läsa in frågor från en specifik fil
     private Category readCategoryFromFile(String fileName) {
 
         ArrayList<Question> questions = new ArrayList<>();
@@ -26,6 +27,7 @@ public class GameLoader {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(", ");
 
+                // Kontrollerar att varje rad har en fråga, rätt svar och tre felaktiga svar
                 if (parts.length >= 5) {
                     String questionText = parts[0];
                     String answer = parts[1];
