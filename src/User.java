@@ -40,16 +40,8 @@ public class User extends JFrame implements ActionListener {
         setTitle("Quiz Game");
         getContentPane().setBackground(backgroundColor);
         categoryBoard.setBackground(backgroundColor);
-        category.setFont(new Font(Font.DIALOG, Font.BOLD,14));
 
-        left.setIcon(starsLeft);
-        right.setIcon(starsRight);
-        left.setHorizontalAlignment(SwingConstants.CENTER);
-        category.setHorizontalAlignment(SwingConstants.CENTER);
-        right.setHorizontalAlignment(SwingConstants.CENTER);
-        categoryBoard.add(left);
-        categoryBoard.add(category);
-        categoryBoard.add(right);
+        styleCategoryBoard();
         add(categoryBoard, BorderLayout.NORTH);
 
         add(text);
@@ -68,7 +60,7 @@ public class User extends JFrame implements ActionListener {
             buttonBoard.add(button);
         }
 
-        designButtons();
+        styleButtons();
         hideButtons();
 
         setSize(500, 350);
@@ -164,7 +156,7 @@ public class User extends JFrame implements ActionListener {
         }
     }
 
-    public void designButtons() {
+    public void styleButtons() {
 
         for (JButton button : buttons) {
             //centrerar texten
@@ -179,6 +171,18 @@ public class User extends JFrame implements ActionListener {
             button.setContentAreaFilled(false);
             button.setOpaque(true);
         }
+    }
+
+    public void styleCategoryBoard(){
+        left.setIcon(starsLeft);
+        right.setIcon(starsRight);
+        left.setHorizontalAlignment(SwingConstants.CENTER);
+        category.setHorizontalAlignment(SwingConstants.CENTER);
+        right.setHorizontalAlignment(SwingConstants.CENTER);
+        categoryBoard.add(left);
+        categoryBoard.add(category);
+        categoryBoard.add(right);
+        category.setFont(new Font(Font.DIALOG, Font.BOLD,14));
     }
 
 
