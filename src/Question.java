@@ -3,7 +3,7 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Question implements Serializable {
+public class Question implements Serializable { //Klass för frågor. Innehåller en lista över svarsalternativ med ett korrekt svar och tre felaktiga.
 
     String question;
     ArrayList<String> alternatives = new ArrayList<>();

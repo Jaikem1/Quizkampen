@@ -3,7 +3,7 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Category implements Serializable {
+public class Category implements Serializable { //Klass för kategorier. Innehåller en lista över frågor inom den kategorin.
     String name;
     ArrayList<Question> questions;
 
