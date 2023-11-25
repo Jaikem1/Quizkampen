@@ -176,7 +176,10 @@ class ServerSidePlayer extends Thread {
                 else if (state == ENDGAME) {
 
                     if (points > opponent.points){
-                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> DU VANN! <br><br>");
+                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Du vann! <br><br>");
+                    }
+                    else if (points == opponent.points) {
+                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Det blev oavgjort. <br><br>");
                     }
                     else{
                         output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Du förlorade :( <br><br>");
