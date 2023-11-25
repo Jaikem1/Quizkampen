@@ -17,7 +17,6 @@ public class User extends JFrame implements ActionListener {
     private final ImageIcon starsRight = new ImageIcon("src/Resources/Three stars right.png");
 
     Color backgroundColor = new Color(106, 90, 205);
-    Color messageColor = new Color(72, 61, 139);
     JPanel buttonBoard = new JPanel(new GridLayout(2, 2));
     JPanel categoryBoard = new JPanel(new GridLayout(1,3));
     JLabel left = new JLabel();
@@ -182,7 +181,7 @@ public class User extends JFrame implements ActionListener {
         categoryBoard.add(left);
         categoryBoard.add(category);
         categoryBoard.add(right);
-        category.setFont(new Font(Font.DIALOG, Font.BOLD,14));
+        category.setFont(new Font(text.getFont().getFontName(), Font.BOLD,18));
     }
 
 
