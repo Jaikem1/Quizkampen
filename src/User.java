@@ -39,6 +39,9 @@ public class User extends JFrame implements ActionListener {
 
         setTitle("Quiz Game");
         getContentPane().setBackground(backgroundColor);
+        categoryBoard.setBackground(backgroundColor);
+        category.setFont(new Font(Font.DIALOG, Font.BOLD,14));
+
         left.setIcon(starsLeft);
         right.setIcon(starsRight);
         left.setHorizontalAlignment(SwingConstants.CENTER);
@@ -93,9 +96,7 @@ public class User extends JFrame implements ActionListener {
                     resetButtonColors();
 
                 } else {
-                    category.setText("MESSAGE");// Syns inte då text är samma färg som bakgrund. Text behövs för att label ska målas ut korrekt.
-                    category.setForeground(messageColor);
-                    categoryBoard.setBackground(messageColor);
+                    category.setForeground(backgroundColor);// Osynlig text => Samma färg som bakgrund. Text behövs för att label ska målas ut korrekt.
                     message = (String) obj;
                     if (message.startsWith("MESSAGE")) {
                         text.setText(message.substring(8));
@@ -105,8 +106,8 @@ public class User extends JFrame implements ActionListener {
                         hideButtons();
                         text.setText("<html>" + message.substring(14));
                     } else if (message.startsWith("CATEGORY")) {
-                        category.setText(message.substring(8));
-                        categoryBoard.setBackground(Color.ORANGE);
+                        category.setText(message.substring(8).toUpperCase());
+                        category.setForeground(Color.ORANGE);
                     } else {
                         String[] categories = message.split(" ");
                         resetButtonColors();
