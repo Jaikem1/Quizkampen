@@ -19,8 +19,9 @@ class ServerSidePlayer extends Thread {
     private final int SELECT = 0;
     private final int ROUNDS = 1;
     private final int ENDROUND = 2;
+    private final int BETWEEN = 3;
+    private final int ENDGAME = 4;
     private int state = SELECT;
-
     private int roundNumber = 0;
     private int roundPoints = 0;
     private List<String> roundScores = new ArrayList<>();
@@ -56,8 +57,6 @@ class ServerSidePlayer extends Thread {
     public ServerSidePlayer getOpponent() {
         return opponent;
     }
-
-
     public synchronized void setPointsMessage(StringBuilder pointsMessage) {
         this.pointsMessage = new StringBuilder(pointsMessage);
     }
@@ -65,9 +64,6 @@ class ServerSidePlayer extends Thread {
     public StringBuilder getPointsMessage() {
         return pointsMessage;
     }
-
-    public int getRoundNumber() {return this.roundNumber;}
-
     public void run() {
 
         Properties p = new Properties();
@@ -78,8 +74,6 @@ class ServerSidePlayer extends Thread {
         int settingsQuestionsPerRound;
         int settingsNumberOfRounds;
         int currentQuestion = 0;
-        boolean pointsMessageSent = false;
-
 
         try {
             p.load(new FileInputStream("src/Settings.properties"));
@@ -92,7 +86,6 @@ class ServerSidePlayer extends Thread {
 
         for(int i = 1; i <= settingsNumberOfRounds; i++) { roundScores.add("-"); }
 
-
         try {
 
             // Quiz runda
@@ -101,7 +94,8 @@ class ServerSidePlayer extends Thread {
                 if (state == SELECT) {
                     currentQuestion = 0;
                     Collections.shuffle(game.categories);
-                    output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName());
+                    output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName() +
+                            " " + game.categories.get(2).getName() + " " + game.categories.get(3).getName());
 
                     if (this.equals(game.currentPlayer)) {
                         output.writeObject("MESSAGE Select a category");
@@ -142,20 +136,16 @@ class ServerSidePlayer extends Thread {
                     }
                 } else if (state == ENDROUND) {
                     setPointsMessage(pointsMessage.delete(0, pointsMessage.length()));
-                    opponent.setPointsMessage(opponent.pointsMessage.delete(0,opponent.pointsMessage.length()));
                     this.roundScores.set(roundNumber, String.valueOf(roundPoints));
                     this.roundNumber++;
                     this.roundPoints = 0;
-                    for (int i = 0; i < settingsNumberOfRounds; i++) {
-                        this.pointsMessage.append("<tr><td>").append(roundScores.get(i)).append("</td><td> Round ").append(i+1)
-                                .append("</td><td>").append(opponent.roundScores.get(i)).append("</td>");
-                    }
+
                     if (!game.opponentIsWaiting) {
                         game.switchCurrentPlayer();
                         game.opponentIsWaiting = true;
-                        output.writeObject("<html>MESSAGE Waiting for opponent<br><br>" + "Points<br>"
-                                            + points + " - " + opponent.points + "<br><br><table border=\"0\">"+ getPointsMessage()
-                                            + "</table> </html>");
+
+                        output.writeObject("<html>MESSAGE Waiting for opponent to finish round.<br><br> Your result this round <br><br>"
+                                            + roundScores.get(this.roundNumber-1) + " out of " + settingsQuestionsPerRound + "</html>");
                         while (game.waitForOpponent) {
                             Thread.sleep(100);
                         }
@@ -165,11 +155,39 @@ class ServerSidePlayer extends Thread {
                     }
                     game.categoryIsPicked = false;
                     game.opponentIsWaiting = false;
-                    state = SELECT;
+                    state = BETWEEN;
                 }
+                else if (state == BETWEEN) {
 
+                    for (int i = 0; i < settingsNumberOfRounds; i++) {
+                        this.pointsMessage.append("<tr><td>").append(roundScores.get(i)).append("</td><td> Round ").append(i+1)
+                                .append("</td><td>").append(opponent.roundScores.get(i)).append("</td>");
+                    }
+                    output.writeObject("<html>MESSAGE Points<br><br><table border=\"0\"><tr><td>"
+                                        + points + "</td><td>Total</td><td>"+ opponent.points + "</td></tr>" + getPointsMessage());
+
+                    if (roundNumber == settingsNumberOfRounds){
+                        state = ENDGAME;
+                    } else {
+                        Thread.sleep(5000);
+                        state = SELECT;
+                    }
+                }
+                else if (state == ENDGAME) {
+
+                    if (points > opponent.points){
+                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Du vann! <br><br>");
+                    }
+                    else if (points == opponent.points) {
+                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Det blev oavgjort. <br><br>");
+                    }
+                    else{
+                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Du förlorade :( <br><br>");
+                    }
+                    Thread.sleep(10000);
+                    socket.close();
+                }
             }
-
         } catch (
                 IOException e) {
             System.out.println("Player died: " + e);

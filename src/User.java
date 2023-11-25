@@ -10,13 +10,17 @@ import java.util.ArrayList;
 
 public class User extends JFrame implements ActionListener {
 
-    private final ImageIcon buttonIcon = new ImageIcon("src/Resources/purple_love.png");
+    private final ImageIcon buttonIconSelect = new ImageIcon("src/Resources/purple_love.png");
     private final ImageIcon buttonIconWrong = new ImageIcon("src/Resources/red_love.png");
     private final ImageIcon buttonIconRight = new ImageIcon("src/Resources/green_love.png");
+    private final ImageIcon starsLeft = new ImageIcon("src/Resources/Three stars left.png");
+    private final ImageIcon starsRight = new ImageIcon("src/Resources/Three stars right.png");
 
-    Color purpleColor = new Color(106, 90, 205);
+    Color backgroundColor = new Color(106, 90, 205);
     JPanel buttonBoard = new JPanel(new GridLayout(2, 2));
-    JPanel categoryBoard = new JPanel();
+    JPanel categoryBoard = new JPanel(new GridLayout(1,3));
+    JLabel left = new JLabel();
+    JLabel right = new JLabel();
     JLabel text = new JLabel("Frågan som ställs står här");
     JLabel category = new JLabel("Welcome");
     JButton a = new JButton("");
@@ -27,47 +31,41 @@ public class User extends JFrame implements ActionListener {
     ObjectInputStream in;
     Question question;
     Boolean questionMode = false;
-
     ArrayList<JButton> buttons = new ArrayList<>();
 
 
     public User() {
 
         setTitle("Quiz Game");
+        getContentPane().setBackground(backgroundColor);
+        categoryBoard.setBackground(backgroundColor);
 
-        categoryBoard.add(category);
+        styleCategoryBoard();
         add(categoryBoard, BorderLayout.NORTH);
-        categoryBoard.setBackground(Color.ORANGE);
 
         add(text);
         text.setHorizontalAlignment(SwingConstants.CENTER);
+        text.setForeground(Color.WHITE);
 
         buttons.add(a);
         buttons.add(b);
         buttons.add(c);
         buttons.add(d);
 
-        for (JButton button : buttons) {
-            buttonBoard.add(button);
-        }
-
         add(buttonBoard, BorderLayout.SOUTH);
 
         for (JButton button : buttons) {
             button.addActionListener(this);
+            buttonBoard.add(button);
         }
 
-        text.setForeground(Color.WHITE);
-        getContentPane().setBackground(purpleColor);
-        designButtons();
+        styleButtons();
         hideButtons();
-
 
         setSize(500, 350);
         setLocationRelativeTo(null);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-
 
         String message;
         Question question;
@@ -89,25 +87,26 @@ public class User extends JFrame implements ActionListener {
                     resetButtonColors();
 
                 } else {
+                    category.setForeground(backgroundColor);// Osynlig text => Samma färg som bakgrund. Text behövs för att label ska målas ut korrekt.
                     message = (String) obj;
                     if (message.startsWith("MESSAGE")) {
-                        text.setText(message);
+                        text.setText(message.substring(8));
                     } else if (message.startsWith("DISABLE")) {
                         hideButtons();
                     } else if (message.startsWith("<html>MESSAGE")) {
                         hideButtons();
-                        text.setText(message);
+                        text.setText("<html>" + message.substring(14));
                     } else if (message.startsWith("CATEGORY")) {
-                        category.setText(message.substring(8));
+                        category.setText(message.substring(8).toUpperCase());
+                        category.setForeground(Color.ORANGE);
                     } else {
                         String[] categories = message.split(" ");
                         resetButtonColors();
                         showButtons();
                         a.setText(categories[0]);
                         b.setText(categories[1]);
-                        c.setText("");
-                        d.setText("");
-
+                        c.setText(categories[2]);
+                        d.setText(categories[3]);
                     }
                 }
             }
@@ -119,19 +118,15 @@ public class User extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         JButton button = (JButton) e.getSource();
-        button.setOpaque(true);
-
         out.println(e.getActionCommand());
+
         if (questionMode) {
             if (e.getActionCommand().equals(question.getAnswer())) {
                 button.setIcon(buttonIconRight);
-
-
             } else {
                 button.setIcon(buttonIconWrong);
             }
         }
-
     }
 
     public void paintQuestion() {
@@ -144,7 +139,7 @@ public class User extends JFrame implements ActionListener {
 
     public void resetButtonColors() {
         for (JButton button : buttons) {
-            button.setIcon(buttonIcon);
+            button.setIcon(buttonIconSelect);
         }
     }
 
@@ -160,24 +155,34 @@ public class User extends JFrame implements ActionListener {
         }
     }
 
-    public void designButtons() {
+    public void styleButtons() {
 
         for (JButton button : buttons) {
             //centrerar texten
-            button.setIcon(buttonIcon);
+            button.setIcon(buttonIconSelect);
             button.setHorizontalTextPosition(JButton.CENTER);
             //hanterar färgen
             button.setForeground(Color.white);
-            button.setBackground(purpleColor); //utfyllnad runt knapp samma som bakgrund
-            button.getParent().setBackground(purpleColor); //Gör så det inte blir vitt mellan rundorna
+            button.setBackground(backgroundColor); //utfyllnad runt knapp samma som bakgrund
+            button.getParent().setBackground(backgroundColor); //Gör så det inte blir vitt mellan rundorna
             button.setFocusable(false);//Målar inte ut en ram när man står över knapp
             button.setBorderPainted(false);//Gör så det inte blir vitt mellan knapparna
             button.setContentAreaFilled(false);
             button.setOpaque(true);
         }
-
     }
 
+    public void styleCategoryBoard(){
+        left.setIcon(starsLeft);
+        right.setIcon(starsRight);
+        left.setHorizontalAlignment(SwingConstants.CENTER);
+        category.setHorizontalAlignment(SwingConstants.CENTER);
+        right.setHorizontalAlignment(SwingConstants.CENTER);
+        categoryBoard.add(left);
+        categoryBoard.add(category);
+        categoryBoard.add(right);
+        category.setFont(new Font(text.getFont().getFontName(), Font.BOLD,18));
+    }
 
 
     public static void main(String[] args) {
