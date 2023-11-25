@@ -28,7 +28,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
     private StringBuilder pointsMessage = new StringBuilder();
 
 
-    public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {  //konstruktor med in/out-streams och initialt meddelande vid uppkoppling.
+    public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {  //constructor med in/out-streams och initialt meddelande vid uppkoppling.
 
         this.socket = socket;
         this.game = game;
