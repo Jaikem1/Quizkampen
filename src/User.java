@@ -130,7 +130,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     }
 
     public void paintQuestion() { //Skriver ut frågan på label och svarsalternativen på knapparna
-        text.setText(question.getQuestion());
+        text.setText("<html><body style='padding: 20px; text-align: center;'>" + question.getQuestion() + "</body></html>");
         a.setText(question.getAlternatives().get(0));
         b.setText(question.getAlternatives().get(1));
         c.setText(question.getAlternatives().get(2));
