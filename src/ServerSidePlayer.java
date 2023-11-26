@@ -21,6 +21,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
     private final int ENDROUND = 2;
     private final int BETWEEN = 3;
     private final int ENDGAME = 4;
+    private final int PLAYAGAIN = 5;
     private int state = SELECT;     //State-markör
     private int roundNumber = 0;    //spelrondens ordningsnummer
     private int roundPoints = 0;    //Spelarens poäng för spelronden
@@ -178,15 +179,22 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
 
                     if (points > opponent.points){
                         output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Du vann! <br><br>" + scoreOutput + getPointsMessage());
+                        Thread.sleep(5000);
+                        state = PLAYAGAIN;
                     }
                     else if (points == opponent.points) {
                         output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Det blev oavgjort. <br><br>" + scoreOutput + getPointsMessage());
+                        Thread.sleep(5000);
+                        state = PLAYAGAIN;
                     }
                     else{
                         output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Du förlorade :( <br><br>" + scoreOutput + getPointsMessage());
+                        Thread.sleep(5000);
+                        state = PLAYAGAIN;
                     }
-                    Thread.sleep(10000);
-                    socket.close();
+                }
+                else if (state == PLAYAGAIN){
+                    output.writeObject("<html>MESSAGE Vill du spela igen?");
                 }
             }
         } catch (

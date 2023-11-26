@@ -94,6 +94,14 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                     } else if (message.startsWith("DISABLE")) {
                         hideButtons();
                     } else if (message.startsWith("<html>MESSAGE")) {
+                        if (message.startsWith("<html>MESSAGE Vill du spela igen?")){
+                            resetButtonColors();
+                            showButtons();
+                            buttonBoard.remove(c);
+                            buttonBoard.remove(d);
+                            a.setText("JA");
+                            b.setText("NEJ");
+                        }
                         hideButtons();
                         text.setText("<html>" + message.substring(14));
                     } else if (message.startsWith("CATEGORY")) {
@@ -154,6 +162,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
             button.setVisible(true);
         }
     }
+
 
     public void styleButtons() { //knapparnas utseende
 
