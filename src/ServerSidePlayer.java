@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-class ServerSidePlayer extends Thread {
+class ServerSidePlayer extends Thread { //innehåller serversidans spellogik för varje enskild spelare
     ServerSidePlayer opponent;
     Socket socket;
     BufferedReader input;
@@ -15,20 +15,20 @@ class ServerSidePlayer extends Thread {
     ServerSideGame game;
     String player;
 
-    int points;
-    private final int SELECT = 0;
+    int points;                         //Spelarens totalpoäng
+    private final int SELECT = 0;       //Spelets olika states
     private final int ROUNDS = 1;
     private final int ENDROUND = 2;
     private final int BETWEEN = 3;
     private final int ENDGAME = 4;
-    private int state = SELECT;
-    private int roundNumber = 0;
-    private int roundPoints = 0;
-    private List<String> roundScores = new ArrayList<>();
+    private int state = SELECT;     //State-markör
+    private int roundNumber = 0;    //spelrondens ordningsnummer
+    private int roundPoints = 0;    //Spelarens poäng för spelronden
+    private List<String> roundScores = new ArrayList<>();   //Sparar de individuella rondernas poäng
     private StringBuilder pointsMessage = new StringBuilder();
 
 
-    public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {
+    public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {  //constructor med in/out-streams och initialt meddelande vid uppkoppling.
 
         this.socket = socket;
         this.game = game;
@@ -44,29 +44,24 @@ class ServerSidePlayer extends Thread {
         }
     }
 
-    /**
-     * Accepts notification of whom the opponent is.
-     */
-    public void setOpponent(ServerSidePlayer opponent) {
+    public void setOpponent(ServerSidePlayer opponent) {    //kopplar ihop spelaren med annan klient som motspelare
         this.opponent = opponent;
     }
 
-    /**
-     * Returns the opponent.
-     */
     public ServerSidePlayer getOpponent() {
         return opponent;
-    }
-    public synchronized void setPointsMessage(StringBuilder pointsMessage) {
+    }   // returnerar motspelaren
+
+    public synchronized void setPointsMessage(StringBuilder pointsMessage) {    //sätter poängmeddelandet
         this.pointsMessage = new StringBuilder(pointsMessage);
     }
 
     public StringBuilder getPointsMessage() {
         return pointsMessage;
-    }
-    public void run() {
+    }   //returnerar poängmeddelandet
+    public void run() { //Här sker spelronderna och övrig logik
 
-        Properties p = new Properties();
+        Properties p = new Properties();    //Skapar upp properties
 
         String userAnswer;
         String pickedCategory = "";
@@ -75,7 +70,7 @@ class ServerSidePlayer extends Thread {
         int settingsNumberOfRounds;
         int currentQuestion = 0;
 
-        try {
+        try {   //läser in properties från fil och ställer in antal ronder och antal frågor per rond
             p.load(new FileInputStream("src/Settings.properties"));
         } catch (IOException e) {
             System.out.println("Settings filen hittades ej!");
@@ -88,10 +83,10 @@ class ServerSidePlayer extends Thread {
 
         try {
 
-            // Quiz runda
+            // Logik för quizronder med olika states. Spelet sker i huvudsak i denna loop.
             while (true) {
 
-                if (state == SELECT) {
+                if (state == SELECT) {  //currentPlayer väljer kategori. Opponent väntar.
                     currentQuestion = 0;
                     Collections.shuffle(game.categories);
                     output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName() +
@@ -114,7 +109,7 @@ class ServerSidePlayer extends Thread {
                         }
                         state = ROUNDS;
                     }
-                } else if (state == ROUNDS) {
+                } else if (state == ROUNDS) {   //Spelrondens frågor och poängräkning
                     output.writeObject("CATEGORY" + game.getSelectedCategory().getName());
                     while (game.getSelectedCategory() != null) {
                         Collections.shuffle(game.getSelectedCategory().getQuestions().get(currentQuestion).getAlternatives());
@@ -134,11 +129,11 @@ class ServerSidePlayer extends Thread {
                             break;
                         }
                     }
-                } else if (state == ENDROUND) {
+                } else if (state == ENDROUND) { //Den spelare som först spelat klart ronden väntar här tills motspelaren avslutat sin rond.
                     setPointsMessage(pointsMessage.delete(0, pointsMessage.length()));
                     this.roundScores.set(roundNumber, String.valueOf(roundPoints));
-                    this.roundNumber++;
-                    this.roundPoints = 0;
+                    this.roundNumber++; //nästa rond
+                    this.roundPoints = 0; //rondens poäng nollställs
 
                     if (!game.opponentIsWaiting) {
                         game.switchCurrentPlayer();
@@ -157,7 +152,7 @@ class ServerSidePlayer extends Thread {
                     game.opponentIsWaiting = false;
                     state = BETWEEN;
                 }
-                else if (state == BETWEEN) {
+                else if (state == BETWEEN) { //Spelarnas poäng för ronden visas för båda innan nästa rond påbörjas
 
                     for (int i = 0; i < settingsNumberOfRounds; i++) {
                         this.pointsMessage.append("<tr><td>").append(roundScores.get(i)).append("</td><td> Round ").append(i+1)
@@ -173,7 +168,7 @@ class ServerSidePlayer extends Thread {
                         state = SELECT;
                     }
                 }
-                else if (state == ENDGAME) {
+                else if (state == ENDGAME) {    //Efter sista ronden är spelad. Resultatmeddelande visas.
 
                     if (points > opponent.points){
                         output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Du vann! <br><br>");

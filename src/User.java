@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class User extends JFrame implements ActionListener {
+public class User extends JFrame implements ActionListener { //Klienten. Det användaren ser och jobbar mot.
 
     private final ImageIcon buttonIconSelect = new ImageIcon("src/Resources/purple_love.png");
     private final ImageIcon buttonIconWrong = new ImageIcon("src/Resources/red_love.png");
@@ -23,10 +23,10 @@ public class User extends JFrame implements ActionListener {
     JLabel right = new JLabel();
     JLabel text = new JLabel("Frågan som ställs står här");
     JLabel category = new JLabel("Welcome");
-    JButton a = new JButton("alt 1");
-    JButton b = new JButton("alt 2");
-    JButton c = new JButton("alt 3");
-    JButton d = new JButton("alt 4");
+    JButton a = new JButton("");
+    JButton b = new JButton("");
+    JButton c = new JButton("");
+    JButton d = new JButton("");
     PrintWriter out;
     ObjectInputStream in;
     Question question;
@@ -36,7 +36,7 @@ public class User extends JFrame implements ActionListener {
 
     public User() {
 
-        setTitle("Quiz Game");
+        setTitle("Quiz Game");  //GUI ritas upp
         getContentPane().setBackground(backgroundColor);
         categoryBoard.setBackground(backgroundColor);
 
@@ -54,7 +54,7 @@ public class User extends JFrame implements ActionListener {
 
         add(buttonBoard, BorderLayout.SOUTH);
 
-        for (JButton button : buttons) {
+        for (JButton button : buttons) {    //knappar får action listeners och läggs till knapp-panelen
             button.addActionListener(this);
             buttonBoard.add(button);
         }
@@ -70,7 +70,7 @@ public class User extends JFrame implements ActionListener {
         String message;
         Question question;
 
-        try {
+        try {   //Kommunikation mellan klienten och servern
             Socket socket = new Socket("127.0.0.1", 55565);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new ObjectInputStream(socket.getInputStream());
@@ -78,7 +78,7 @@ public class User extends JFrame implements ActionListener {
             while ((obj = in.readObject()) != null) {
                 questionMode = false;
 
-                if (obj instanceof Question) {
+                if (obj instanceof Question) {  //Vid inkommande fråga skrivs frågan och svarsalternativ ut och questionmode för action listener aktiveras.
                     question = (Question) obj;
                     this.question = question;
                     paintQuestion();
@@ -86,7 +86,7 @@ public class User extends JFrame implements ActionListener {
                     showButtons();
                     resetButtonColors();
 
-                } else {
+                } else { //Kategorival visas. Vid inkommande text hanteras processen enligt första ordet i meddelandet.
                     category.setForeground(backgroundColor);// Osynlig text => Samma färg som bakgrund. Text behövs för att label ska målas ut korrekt.
                     message = (String) obj;
                     if (message.startsWith("MESSAGE")) {
@@ -115,12 +115,12 @@ public class User extends JFrame implements ActionListener {
         }
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) { //skickar knappval till servern
 
         JButton button = (JButton) e.getSource();
         out.println(e.getActionCommand());
 
-        if (questionMode) {
+        if (questionMode) { //I questionmode byter knappen färg till grön/röd vid rätt/fel svar.
             if (e.getActionCommand().equals(question.getAnswer())) {
                 button.setIcon(buttonIconRight);
             } else {
@@ -129,7 +129,7 @@ public class User extends JFrame implements ActionListener {
         }
     }
 
-    public void paintQuestion() {
+    public void paintQuestion() { //Skriver ut frågan på label och svarsalternativen på knapparna
         text.setText(question.getQuestion());
         a.setText(question.getAlternatives().get(0));
         b.setText(question.getAlternatives().get(1));
@@ -137,25 +137,25 @@ public class User extends JFrame implements ActionListener {
         d.setText(question.getAlternatives().get(3));
     }
 
-    public void resetButtonColors() {
+    public void resetButtonColors() { //återställer knapparnas färg
         for (JButton button : buttons) {
             button.setIcon(buttonIconSelect);
         }
     }
 
-    public void hideButtons() {
+    public void hideButtons() { //döljer knappar
         for (JButton button : buttons) {
             button.setVisible(false);
         }
     }
 
-    public void showButtons() {
+    public void showButtons() { //visar knappar
         for (JButton button : buttons) {
             button.setVisible(true);
         }
     }
 
-    public void styleButtons() {
+    public void styleButtons() { //knapparnas utseende
 
         for (JButton button : buttons) {
             //centrerar texten
@@ -172,7 +172,7 @@ public class User extends JFrame implements ActionListener {
         }
     }
 
-    public void styleCategoryBoard(){
+    public void styleCategoryBoard(){ //utseende för panelen som visar den aktuella kategorin
         left.setIcon(starsLeft);
         right.setIcon(starsRight);
         left.setHorizontalAlignment(SwingConstants.CENTER);
