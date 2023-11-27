@@ -40,7 +40,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new ObjectOutputStream(socket.getOutputStream());
 
-            output.writeObject("MESSAGE Waiting for opponent to connect");
+            output.writeObject("MESSAGE Väntar på att motspelare ansluter");
         } catch (IOException e) {
             System.out.println("Player died: " + e);
         }
@@ -97,7 +97,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                         Collections.shuffle(game.categories);
                         output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName() +
                                 " " + game.categories.get(2).getName() + " " + game.categories.get(3).getName());
-                        output.writeObject("MESSAGE Select a category");
+                        output.writeObject("MESSAGE Välj en kategori");
                         while ((pickedCategory = input.readLine()) != null) {
                             game.setSelectedCategory(pickedCategory);
                             Collections.shuffle(game.getSelectedCategory().getQuestions());
@@ -106,7 +106,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                             break;
                         }
                     } else {
-                        output.writeObject("MESSAGE Other player is choosing category ");
+                        output.writeObject("MESSAGE Din motspelare väljer kategori ");
                         output.writeObject("DISABLE");
                         while (!game.categoryIsPicked) {
                             Thread.sleep(100);
@@ -144,8 +144,8 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                         game.switchCurrentPlayer();
                         game.opponentIsWaiting = true;
 
-                        output.writeObject("<html>MESSAGE Waiting for opponent to finish round.<br><br> Your result this round <br><br>"
-                                            + roundScores.get(this.roundNumber-1) + " out of " + settingsQuestionsPerRound + "</html>");
+                        output.writeObject("<html>MESSAGE Din motspelare avslutar sin rond. Var god vänta.<br><br> Ditt resultat denna runda: <br><br>"
+                                            + roundScores.get(this.roundNumber-1) + " rätt av " + settingsQuestionsPerRound + " möjliga. </html>");
                         while (game.waitForOpponent) {
                             Thread.sleep(100);
                         }

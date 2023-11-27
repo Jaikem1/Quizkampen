@@ -172,7 +172,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         }
     }
 
-    public void styleCategoryBoard(){ //utseende för panelen som visar den aktuella kategorin
+    public void styleCategoryBoard(){ //utseende för panelen som visar den aktuella kategorin mm
         left.setIcon(starsLeft);
         right.setIcon(starsRight);
         left.setHorizontalAlignment(SwingConstants.CENTER);
