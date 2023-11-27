@@ -1,7 +1,9 @@
 
 
+import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,6 +63,17 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
     public StringBuilder getPointsMessage() {
         return pointsMessage;
     }   //returnerar poängmeddelandet
+
+    public void playerExit() { //Hanterar om motståndaren lämnar
+        try {
+            if (opponent != null && opponent.output != null) {
+                opponent.output.writeObject("FEL Oops! Motståndaren har lämnat spelet");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void run() { //Här sker spelronderna och övrig logik
 
         Properties p = new Properties();    //Skapar upp properties
@@ -82,8 +95,6 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
         settingsNumberOfRounds = Integer.parseInt(p.getProperty("rounds", "3"));
 
         for(int i = 1; i <= settingsNumberOfRounds; i++) { roundScores.add("-"); }
-
-
 
         try {
 
@@ -193,11 +204,10 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     socket.close();
                 }
             }
-        } catch (
-                IOException e) {
-            System.out.println("Player died: " + e);
-        } catch (
-                InterruptedException e) {
+        } catch (SocketException e) {
+           playerExit();
+
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
             try {

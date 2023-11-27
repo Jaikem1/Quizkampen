@@ -101,6 +101,9 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                     } else if (message.startsWith("CATEGORY")) {
                         category.setText(message.substring(8).toUpperCase());
                         category.setForeground(Color.ORANGE);
+                    } else if (message.startsWith("FEL")) {
+                        hideButtons();
+                        text.setText(message.substring(4));
                     } else {
                         String[] categories = message.split(" ");
                         resetButtonColors();
