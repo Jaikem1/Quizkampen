@@ -101,14 +101,23 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                     } else if (message.startsWith("CATEGORY")) {
                         category.setText(message.substring(8).toUpperCase());
                         category.setForeground(Color.ORANGE);
-                    } else {
-                        String[] categories = message.split(" ");
-                        resetButtonColors();
+                    } else if (message.startsWith("LOBBY")) {
+                        text.setText(message.substring(5));
                         showButtons();
-                        a.setText(categories[0]);
-                        b.setText(categories[1]);
-                        c.setText(categories[2]);
-                        d.setText(categories[3]);
+                        a.setText("Starta");
+                        b.setText("Inställningar");
+                    } else if (message.startsWith("SETTINGS")) {
+                        text.setText(message.substring(7));
+                        JOptionPane.showMessageDialog(null, "test");
+
+                    } else {
+                    String[] categories = message.split(" ");
+                    resetButtonColors();
+                    showButtons();
+                    a.setText(categories[0]);
+                    b.setText(categories[1]);
+                    c.setText(categories[2]);
+                    d.setText(categories[3]);
                     }
                 }
             }
