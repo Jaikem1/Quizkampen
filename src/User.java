@@ -44,6 +44,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         add(categoryBoard, BorderLayout.NORTH);
 
         add(text);
+        text.setFont(new Font("Lucida Grande", Font.PLAIN,20));
         text.setHorizontalAlignment(SwingConstants.CENTER);
         text.setForeground(Color.WHITE);
 
@@ -169,9 +170,10 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
             button.setBorderPainted(false);//Gör så det inte blir vitt mellan knapparna
             button.setContentAreaFilled(false);
             button.setOpaque(true);
+            button.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
         }
+        System.out.println(a.getFont());
     }
-
     public void styleCategoryBoard(){ //utseende för panelen som visar den aktuella kategorin
         left.setIcon(starsLeft);
         right.setIcon(starsRight);
@@ -181,7 +183,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         categoryBoard.add(left);
         categoryBoard.add(category);
         categoryBoard.add(right);
-        category.setFont(new Font(text.getFont().getFontName(), Font.BOLD,18));
+        category.setFont(new Font("Lucida Grande", Font.BOLD,16));
     }
 
 

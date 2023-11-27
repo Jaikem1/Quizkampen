@@ -144,8 +144,8 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                         game.switchCurrentPlayer();
                         game.opponentIsWaiting = true;
 
-                        output.writeObject("<html>MESSAGE Waiting for opponent to finish round.<br><br> Your result this round <br><br>"
-                                            + roundScores.get(this.roundNumber-1) + " out of " + settingsQuestionsPerRound + "</html>");
+                        output.writeObject("<html>MESSAGE <body style='text-align: center;'> Du fick " + "<span style='color: orange;'>" + roundScores.get(this.roundNumber-1)+ "</span> poäng den här rundan."  +
+                                                "<br><br>Väntar på att motståndaren ska att avsluta sin runda.</body></html>");
                         while (game.waitForOpponent) {
                             Thread.sleep(100);
                         }
@@ -158,14 +158,15 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     state = BETWEEN;
                 }
                 else if (state == BETWEEN) { //Spelarnas poäng för ronden visas för båda innan nästa rond påbörjas
-                    scoreOutput = "<table border=\"0\"><tr style='font-size: 16px;'><td style='text-align: start;'>" + this.points +
+                    scoreOutput = " <table border=\"1\"><tr style='font-size: 16px;'><td style='text-align: start;'>" + this.points +
                             "</td><td style='text-align: center;'>Total</td><td style='text-align: end;'>"+
                             this.opponent.points + "</td></tr>";
                     for (int i = 0; i < settingsNumberOfRounds; i++) {
-                        this.pointsMessage.append("<tr><td style='text-align: start;'>").append(roundScores.get(i)).append("</td><td> Round ").append(i+1)
+                        this.pointsMessage.append("<tr><td style='text-align: start;'>").append(roundScores.get(i)).append("</td><td> Runda ").append(i+1)
                                 .append("</td><td style='text-align: end;'>").append(opponent.roundScores.get(i)).append("</td></html>");
                     }
-                    output.writeObject("<html>MESSAGE Points <br><br>" + scoreOutput + getPointsMessage());
+                    output.writeObject("<html>MESSAGE" + scoreOutput + getPointsMessage());
+                    output.writeObject("CATEGORY Poäng");
 
                     if (roundNumber == settingsNumberOfRounds){
                         state = ENDGAME;
@@ -177,13 +178,16 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                 else if (state == ENDGAME) {    //Efter sista ronden är spelad. Resultatmeddelande visas.
 
                     if (points > opponent.points){
-                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Du vann! <br><br>" + scoreOutput + getPointsMessage());
+                        output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
+                        output.writeObject("CATEGORY Du vann!");
                     }
                     else if (points == opponent.points) {
-                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Det blev oavgjort. <br><br>" + scoreOutput + getPointsMessage());
+                        output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
+                        output.writeObject("CATEGORY Oavgjort" );
                     }
                     else{
-                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Du förlorade :( <br><br>" + scoreOutput + getPointsMessage());
+                        output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
+                        output.writeObject("CATEGORY Du förlorade :(" );
                     }
                     Thread.sleep(10000);
                     socket.close();
