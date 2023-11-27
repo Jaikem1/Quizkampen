@@ -172,7 +172,6 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
             button.setOpaque(true);
             button.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
         }
-        System.out.println(a.getFont());
     }
     public void styleCategoryBoard(){ //utseende för panelen som visar den aktuella kategorin
         left.setIcon(starsLeft);
