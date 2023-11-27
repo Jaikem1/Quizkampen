@@ -40,7 +40,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new ObjectOutputStream(socket.getOutputStream());
 
-            output.writeObject("MESSAGE Waiting for opponent to connect");
+            output.writeObject("MESSAGE Väntar på att motspelare ska ansluta");
         } catch (IOException e) {
             System.out.println("Player died: " + e);
         }
@@ -97,7 +97,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                         Collections.shuffle(game.categories);
                         output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName() +
                                 " " + game.categories.get(2).getName() + " " + game.categories.get(3).getName());
-                        output.writeObject("MESSAGE Select a category");
+                        output.writeObject("MESSAGE Välj en kategori");
                         while ((pickedCategory = input.readLine()) != null) {
                             game.setSelectedCategory(pickedCategory);
                             Collections.shuffle(game.getSelectedCategory().getQuestions());
@@ -106,7 +106,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                             break;
                         }
                     } else {
-                        output.writeObject("MESSAGE Other player is choosing category ");
+                        output.writeObject("MESSAGE Din motspelare väljer kategori ");
                         output.writeObject("DISABLE");
                         while (!game.categoryIsPicked) {
                             Thread.sleep(100);
@@ -159,10 +159,10 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                 }
                 else if (state == BETWEEN) { //Spelarnas poäng för ronden visas för båda innan nästa rond påbörjas
                     scoreOutput = " <table border=\"1\"><tr style='font-size: 16px;'><td style='text-align: start;'>" + this.points +
-                            "</td><td style='text-align: center;'>Total</td><td style='text-align: end;'>"+
+                            "</td><td style='text-align: center;'>Totalt</td><td style='text-align: end;'>"+
                             this.opponent.points + "</td></tr>";
                     for (int i = 0; i < settingsNumberOfRounds; i++) {
-                        this.pointsMessage.append("<tr><td style='text-align: start;'>").append(roundScores.get(i)).append("</td><td> Runda ").append(i+1)
+                        this.pointsMessage.append("<tr><td style='text-align: start;'>").append(roundScores.get(i)).append("</td><td> Rond ").append(i+1)
                                 .append("</td><td style='text-align: end;'>").append(opponent.roundScores.get(i)).append("</td></html>");
                     }
                     output.writeObject("<html>MESSAGE" + scoreOutput + getPointsMessage());
