@@ -21,12 +21,16 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
     private final int ENDROUND = 2;
     private final int BETWEEN = 3;
     private final int ENDGAME = 4;
-    private int state = SELECT;     //State-markör
+    private final int LANDING = 5;
+    //private int state = SELECT;     //State-markör
+    private int state = LANDING;
     private int roundNumber = 0;    //spelrondens ordningsnummer
     private int roundPoints = 0;    //Spelarens poäng för spelronden
     private List<String> roundScores = new ArrayList<>();   //Sparar de individuella rondernas poäng
     private StringBuilder pointsMessage = new StringBuilder();
     private String scoreOutput;
+    boolean readyToStart = false;
+    boolean confirmed = false;
 
 
 
@@ -89,8 +93,24 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
 
             // Logik för quizronder med olika states. Spelet sker i huvudsak i denna loop.
             while (true) {
+                if (state == LANDING) {
+                    output.writeObject("LOBBY Wilkommen");
+                    if (input.readLine().equals("Starta")) {
+                        readyToStart = true;
+                        if (!opponent.readyToStart) {
+                            output.writeObject("MESSAGE Väntar på motståndaren");
+                            output.writeObject("DISABLE");
+                            while (!opponent.readyToStart) {
+                                Thread.sleep(100);
+                            }
+                        } state = SELECT;
+                    } else if (input.readLine().equals("Inställningar")) {
+                        if (!confirmed) {
+                        }
+                    }
 
-                if (state == SELECT) {  //currentPlayer väljer kategori. Opponent väntar.
+
+                } else if (state == SELECT) {  //currentPlayer väljer kategori. Opponent väntar.
                     currentQuestion = 0;
 
                     if (this.equals(game.currentPlayer)) {
