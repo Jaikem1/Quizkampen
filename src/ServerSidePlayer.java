@@ -40,7 +40,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new ObjectOutputStream(socket.getOutputStream());
 
-            output.writeObject("MESSAGE Väntar på att motspelare ansluter");
+            output.writeObject("MESSAGE Waiting for opponent to connect");
         } catch (IOException e) {
             System.out.println("Player died: " + e);
         }
@@ -97,7 +97,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                         Collections.shuffle(game.categories);
                         output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName() +
                                 " " + game.categories.get(2).getName() + " " + game.categories.get(3).getName());
-                        output.writeObject("MESSAGE Välj en kategori");
+                        output.writeObject("MESSAGE Select a category");
                         while ((pickedCategory = input.readLine()) != null) {
                             game.setSelectedCategory(pickedCategory);
                             Collections.shuffle(game.getSelectedCategory().getQuestions());
@@ -106,7 +106,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                             break;
                         }
                     } else {
-                        output.writeObject("MESSAGE Din motspelare väljer kategori ");
+                        output.writeObject("MESSAGE Other player is choosing category ");
                         output.writeObject("DISABLE");
                         while (!game.categoryIsPicked) {
                             Thread.sleep(100);
@@ -144,8 +144,8 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                         game.switchCurrentPlayer();
                         game.opponentIsWaiting = true;
 
-                        output.writeObject("<html>MESSAGE Din motspelare avslutar sin rond. Var god vänta.<br><br> Ditt resultat denna runda: <br><br>"
-                                            + roundScores.get(this.roundNumber-1) + " rätt av " + settingsQuestionsPerRound + " möjliga. </html>");
+                        output.writeObject("<html>MESSAGE <body style='text-align: center;'> Du fick " + "<span style='color: orange;'>" + roundScores.get(this.roundNumber-1)+ "</span> poäng den här rundan."  +
+                                                "<br><br>Väntar på att motståndaren ska att avsluta sin runda.</body></html>");
                         while (game.waitForOpponent) {
                             Thread.sleep(100);
                         }
@@ -158,14 +158,15 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     state = BETWEEN;
                 }
                 else if (state == BETWEEN) { //Spelarnas poäng för ronden visas för båda innan nästa rond påbörjas
-                    scoreOutput = "<table border=\"0\"><tr style='font-size: 16px;'><td style='text-align: start;'>" + this.points +
-                            "</td><td style='text-align: center;'>Totalt</td><td style='text-align: end;'>"+
+                    scoreOutput = " <table border=\"1\"><tr style='font-size: 16px;'><td style='text-align: start;'>" + this.points +
+                            "</td><td style='text-align: center;'>Total</td><td style='text-align: end;'>"+
                             this.opponent.points + "</td></tr>";
                     for (int i = 0; i < settingsNumberOfRounds; i++) {
-                        this.pointsMessage.append("<tr><td style='text-align: start;'>").append(roundScores.get(i)).append("</td><td> Rond ").append(i+1)
+                        this.pointsMessage.append("<tr><td style='text-align: start;'>").append(roundScores.get(i)).append("</td><td> Runda ").append(i+1)
                                 .append("</td><td style='text-align: end;'>").append(opponent.roundScores.get(i)).append("</td></html>");
                     }
-                    output.writeObject("<html>MESSAGE Poäng <br><br>" + scoreOutput + getPointsMessage());
+                    output.writeObject("<html>MESSAGE" + scoreOutput + getPointsMessage());
+                    output.writeObject("CATEGORY Poäng");
 
                     if (roundNumber == settingsNumberOfRounds){
                         state = ENDGAME;
@@ -177,13 +178,16 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                 else if (state == ENDGAME) {    //Efter sista ronden är spelad. Resultatmeddelande visas.
 
                     if (points > opponent.points){
-                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Du vann! <br><br>" + scoreOutput + getPointsMessage());
+                        output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
+                        output.writeObject("CATEGORY Du vann!");
                     }
                     else if (points == opponent.points) {
-                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Det blev oavgjort. <br><br>" + scoreOutput + getPointsMessage());
+                        output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
+                        output.writeObject("CATEGORY Oavgjort" );
                     }
                     else{
-                        output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Du förlorade :( <br><br>" + scoreOutput + getPointsMessage());
+                        output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
+                        output.writeObject("CATEGORY Du förlorade :(" );
                     }
                     Thread.sleep(10000);
                     socket.close();
