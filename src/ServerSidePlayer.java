@@ -159,13 +159,13 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                 }
                 else if (state == BETWEEN) { //Spelarnas poäng för ronden visas för båda innan nästa rond påbörjas
                     scoreOutput = "<table border=\"0\"><tr style='font-size: 16px;'><td style='text-align: start;'>" + this.points +
-                            "</td><td style='text-align: center;'>Total</td><td style='text-align: end;'>"+
+                            "</td><td style='text-align: center;'>Totalt</td><td style='text-align: end;'>"+
                             this.opponent.points + "</td></tr>";
                     for (int i = 0; i < settingsNumberOfRounds; i++) {
-                        this.pointsMessage.append("<tr><td style='text-align: start;'>").append(roundScores.get(i)).append("</td><td> Round ").append(i+1)
+                        this.pointsMessage.append("<tr><td style='text-align: start;'>").append(roundScores.get(i)).append("</td><td> Rond ").append(i+1)
                                 .append("</td><td style='text-align: end;'>").append(opponent.roundScores.get(i)).append("</td></html>");
                     }
-                    output.writeObject("<html>MESSAGE Points <br><br>" + scoreOutput + getPointsMessage());
+                    output.writeObject("<html>MESSAGE Poäng <br><br>" + scoreOutput + getPointsMessage());
 
                     if (roundNumber == settingsNumberOfRounds){
                         state = ENDGAME;
