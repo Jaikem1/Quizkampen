@@ -92,11 +92,11 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
 
                 if (state == SELECT) {  //currentPlayer väljer kategori. Opponent väntar.
                     currentQuestion = 0;
-                    Collections.shuffle(game.categories);
-                    output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName() +
-                            " " + game.categories.get(2).getName() + " " + game.categories.get(3).getName());
 
                     if (this.equals(game.currentPlayer)) {
+                        Collections.shuffle(game.categories);
+                        output.writeObject(game.categories.get(0).getName() + " " + game.categories.get(1).getName() +
+                                " " + game.categories.get(2).getName() + " " + game.categories.get(3).getName());
                         output.writeObject("MESSAGE Select a category");
                         while ((pickedCategory = input.readLine()) != null) {
                             game.setSelectedCategory(pickedCategory);
