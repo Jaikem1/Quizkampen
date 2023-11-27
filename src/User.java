@@ -159,7 +159,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         }
     }
 
-    public JButton findAnswerButton() {
+    public JButton findAnswerButton() { //returnerar knappen med det korrekta svaret
         JButton correctButton = null;
         for (JButton button : buttons) {
             if (button.getText().equals(question.getAnswer())) {
