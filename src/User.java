@@ -22,7 +22,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     JLabel left = new JLabel();
     JLabel right = new JLabel();
     JLabel text = new JLabel("Frågan som ställs står här");
-    JLabel category = new JLabel("Welcome");
+    JLabel category = new JLabel("Välkommen");
     JButton a = new JButton("");
     JButton b = new JButton("");
     JButton c = new JButton("");
