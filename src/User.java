@@ -13,12 +13,13 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     private final ImageIcon buttonIconSelect = new ImageIcon("src/Resources/purple_love.png");
     private final ImageIcon buttonIconWrong = new ImageIcon("src/Resources/red_love.png");
     private final ImageIcon buttonIconRight = new ImageIcon("src/Resources/green_love.png");
+    private final ImageIcon buttonIconMarkCorrect = new ImageIcon("src/Resources/green_mark.png");
     private final ImageIcon starsLeft = new ImageIcon("src/Resources/Three stars left.png");
     private final ImageIcon starsRight = new ImageIcon("src/Resources/Three stars right.png");
 
     Color backgroundColor = new Color(106, 90, 205);
     JPanel buttonBoard = new JPanel(new GridLayout(2, 2));
-    JPanel categoryBoard = new JPanel(new GridLayout(1,3));
+    JPanel categoryBoard = new JPanel(new GridLayout(1, 3));
     JLabel left = new JLabel();
     JLabel right = new JLabel();
     JLabel text = new JLabel("Frågan som ställs står här");
@@ -44,7 +45,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         add(categoryBoard, BorderLayout.NORTH);
 
         add(text);
-        text.setFont(new Font("Lucida Grande", Font.PLAIN,20));
+        text.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
         text.setHorizontalAlignment(SwingConstants.CENTER);
         text.setForeground(Color.WHITE);
 
@@ -122,10 +123,12 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         out.println(e.getActionCommand());
 
         if (questionMode) { //I questionmode byter knappen färg till grön/röd vid rätt/fel svar.
+            JButton correctAnswer = findAnswerButton();
             if (e.getActionCommand().equals(question.getAnswer())) {
                 button.setIcon(buttonIconRight);
             } else {
                 button.setIcon(buttonIconWrong);
+                correctAnswer.setIcon(buttonIconMarkCorrect);
             }
         }
     }
@@ -156,6 +159,16 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         }
     }
 
+    public JButton findAnswerButton() {
+        JButton correctButton = null;
+        for (JButton button : buttons) {
+            if (button.getText().equals(question.getAnswer())) {
+                correctButton = button;
+            }
+        }
+        return correctButton;
+    }
+
     public void styleButtons() { //knapparnas utseende
 
         for (JButton button : buttons) {
@@ -174,7 +187,8 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         }
         System.out.println(a.getFont());
     }
-    public void styleCategoryBoard(){ //utseende för panelen som visar den aktuella kategorin
+
+    public void styleCategoryBoard() { //utseende för panelen som visar den aktuella kategorin
         left.setIcon(starsLeft);
         right.setIcon(starsRight);
         left.setHorizontalAlignment(SwingConstants.CENTER);
@@ -183,7 +197,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         categoryBoard.add(left);
         categoryBoard.add(category);
         categoryBoard.add(right);
-        category.setFont(new Font("Lucida Grande", Font.BOLD,16));
+        category.setFont(new Font("Lucida Grande", Font.BOLD, 16));
     }
 
 
