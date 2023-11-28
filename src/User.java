@@ -45,6 +45,8 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
     public void RunClient() {
         playAgainState = false;
+        buttonBoard.revalidate();
+        buttonBoard.repaint();
 
         setTitle("Quiz Game");  //GUI ritas upp
         getContentPane().setBackground(backgroundColor);
@@ -77,7 +79,9 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         setLocationRelativeTo(null);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
 
+    public void runConnection (){
         String message;
         Question question;
 
@@ -145,12 +149,15 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
         if (playAgainState) {
             if (e.getSource().equals(a)) {
+                out.println("JA");
                 try {
+                    playAgainState = false;
                     socket.close();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
                 RunClient();
+                runConnection();
             } else if (e.getSource().equals(b)) {
                 System.exit(0);
             }
@@ -162,7 +169,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                 button.setIcon(buttonIconRight);
             } else {
                 button.setIcon(buttonIconWrong);
-                correctAnswer.setIcon(buttonIconMarkCorrect);
+                correctAnswer.setIcon(buttonIconMarkCorrect);   //markerar rätt alternativ vid fel-svar.
             }
         }
     }
@@ -238,6 +245,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         User user = new User();
         while (user.isRunning()) {
             user.RunClient();
+            user.runConnection();
         }
     }
 }
