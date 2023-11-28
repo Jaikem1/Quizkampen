@@ -98,18 +98,16 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     if (input.readLine().equals("Starta")) {
                         readyToStart = true;
                         if (!opponent.readyToStart) {
-                            output.writeObject("MESSAGE Väntar på motståndaren");
+                            output.writeObject("MESSAGE Väntar på motspelaren");
                             output.writeObject("DISABLE");
                             while (!opponent.readyToStart) {
                                 Thread.sleep(100);
                             }
-                        } state = SELECT;
-                    } else if (input.readLine().equals("Inställningar")) {
-                        if (!confirmed) {
                         }
+                        state = SELECT;
+                    } else if (input.readLine().equals("Ändra bakgrundsfärg")) {
+                        output.writeObject("SETTINGS");
                     }
-
-
                 } else if (state == SELECT) {  //currentPlayer väljer kategori. Opponent väntar.
                     currentQuestion = 0;
 
