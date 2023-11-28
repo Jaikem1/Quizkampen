@@ -162,7 +162,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                 button.setIcon(buttonIconRight);
             } else {
                 button.setIcon(buttonIconWrong);
-                correctAnswer.setIcon(buttonIconMarkCorrect);
+                correctAnswer.setIcon(buttonIconMarkCorrect);   //markerar rätt alternativ vid fel-svar.
             }
         }
     }

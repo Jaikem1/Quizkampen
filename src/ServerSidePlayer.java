@@ -62,22 +62,9 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
         this.pointsMessage = new StringBuilder(pointsMessage);
     }
 
-    public StringBuilder getPointsMessage() {
+    public StringBuilder getPointsMessage() { //returnerar poängmeddelandet
         return pointsMessage;
-    }   //returnerar poängmeddelandet
-
-    /*
-    public void playerExit() { //Hanterar om motståndaren lämnar
-        try {
-            if (opponent != null && opponent.output != null) {
-                opponent.output.writeObject("FEL Oops! Motståndaren har lämnat spelet");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
-
-     */
 
     public void clearReadline() throws IOException {
         while (input.ready()) {
@@ -105,7 +92,9 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
         settingsQuestionsPerRound = Integer.parseInt(p.getProperty("questionsPerRound", "1"));
         settingsNumberOfRounds = Integer.parseInt(p.getProperty("rounds", "3"));
 
-        for(int i = 1; i <= settingsNumberOfRounds; i++) { roundScores.add("-"); }
+        for (int i = 1; i <= settingsNumberOfRounds; i++) {
+            roundScores.add("-");
+        }
 
         try {
 
@@ -168,7 +157,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                             break;
                         }
                     }
-                } else if (state == ENDROUND) { //Den spelare som först spelat klart ronden väntar här tills motspelaren avslutat sin rond.
+                } else if (state == ENDROUND) { //Rondens poäng visas. Den spelare som först spelat klart ronden väntar här tills motspelaren avslutat sin rond.
                     setPointsMessage(pointsMessage.delete(0, pointsMessage.length()));
                     this.roundScores.set(roundNumber, String.valueOf(roundPoints));
                     this.roundNumber++; //nästa rond
@@ -244,7 +233,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     try {
                         output.writeObject("FEL Oops! Motståndaren har lämnat spelet. Du vann!");
                         Thread.sleep(2000);
-                        state = SELECT;
+                        state = PLAYAGAIN;
                         game.categoryIsPicked = false;
                         game.opponentIsWaiting = false;
                     } catch (IOException | InterruptedException e) {
