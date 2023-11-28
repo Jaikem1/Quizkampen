@@ -94,22 +94,21 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
             // Logik för quizronder med olika states. Spelet sker i huvudsak i denna loop.
             while (true) {
                 if (state == LANDING) {
-                    output.writeObject("LOBBY Wilkommen");
-                    if (input.readLine().equals("Starta")) {
+                    output.writeObject("LOBBY Välkommen");
+                    String test = input.readLine();
+                    if (test.equals("Starta")) {
                         readyToStart = true;
                         if (!opponent.readyToStart) {
-                            output.writeObject("MESSAGE Väntar på motståndaren");
+                            output.writeObject("MESSAGE Väntar på motspelaren");
                             output.writeObject("DISABLE");
                             while (!opponent.readyToStart) {
                                 Thread.sleep(100);
                             }
-                        } state = SELECT;
-                    } else if (input.readLine().equals("Inställningar")) {
-                        if (!confirmed) {
                         }
+                        state = SELECT;
+                    } else if (test.equals("Ändra bakgrundsfärg")) {
+                        output.writeObject("SETTINGS");
                     }
-
-
                 } else if (state == SELECT) {  //currentPlayer väljer kategori. Opponent väntar.
                     currentQuestion = 0;
 

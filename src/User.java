@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class User extends JFrame implements ActionListener { //Klienten. Det användaren ser och jobbar mot.
 
@@ -33,6 +34,13 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     Question question;
     Boolean questionMode = false;
     ArrayList<JButton> buttons = new ArrayList<>();
+    ArrayList<Color> alternativeBackgroundColors = new ArrayList<>(Arrays.asList(
+            new Color(80, 129, 204),
+            new Color(140, 171, 255),
+            new Color(53, 21, 93),
+            backgroundColor
+    ));
+    int count = 0;
 
 
     public User() {
@@ -90,6 +98,9 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
                 } else { //Kategorival visas. Vid inkommande text hanteras processen enligt första ordet i meddelandet.
                     category.setForeground(backgroundColor);// Osynlig text => Samma färg som bakgrund. Text behövs för att label ska målas ut korrekt.
+                    getContentPane().setBackground(backgroundColor);
+                    styleButtons();
+                    styleCategoryBoard();
                     message = (String) obj;
                     if (message.startsWith("MESSAGE")) {
                         text.setText(message.substring(8));
@@ -105,10 +116,15 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                         text.setText(message.substring(5));
                         showButtons();
                         a.setText("Starta");
-                        b.setText("Inställningar");
+                        b.setText("Ändra bakgrundsfärg");
                     } else if (message.startsWith("SETTINGS")) {
-                        text.setText(message.substring(7));
-                        JOptionPane.showMessageDialog(null, "test");
+                        if (count == 4) {
+                            count = 0;
+                        }
+                        backgroundColor = alternativeBackgroundColors.get(count);
+                        repaint();
+                        revalidate();
+                        count++;
 
                     } else {
                     String[] categories = message.split(" ");
@@ -197,6 +213,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     }
 
     public void styleCategoryBoard() { //utseende för panelen som visar den aktuella kategorin
+        categoryBoard.setBackground(backgroundColor);
         left.setIcon(starsLeft);
         right.setIcon(starsRight);
         left.setHorizontalAlignment(SwingConstants.CENTER);
