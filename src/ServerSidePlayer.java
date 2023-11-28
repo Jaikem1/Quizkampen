@@ -22,6 +22,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
     private final int BETWEEN = 3;
     private final int ENDGAME = 4;
     private final int LANDING = 5;
+    private final int NEW = 6;
     //private int state = SELECT;     //State-markör
     private int state = LANDING;
     private int roundNumber = 0;    //spelrondens ordningsnummer
@@ -209,7 +210,16 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                         output.writeObject("CATEGORY Du förlorade :(" );
                     }
                     Thread.sleep(10000);
-                    socket.close();
+                    state = NEW;
+                } else if (state == NEW) {
+                    output.writeObject("END Vill du spela igen?");
+                    String selection = input.readLine();
+                    if (selection.equals("Nej")) {
+                        socket.close();
+                        System.exit(0);
+                    } else if (selection.equals("Ja")) {
+                        output.writeObject("PLAY");
+                    }
                 }
             }
         } catch (

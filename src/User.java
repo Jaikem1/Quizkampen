@@ -41,6 +41,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
             backgroundColor
     ));
     int count = 0;
+    boolean playing = false;
 
 
     public User() {
@@ -117,6 +118,17 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                         showButtons();
                         a.setText("Starta");
                         b.setText("Ändra bakgrundsfärg");
+                    } else if (message.startsWith("END")) {
+                        a.setText("Ja");
+                        b.setText("Nej");
+                        buttonBoard.remove(c);
+                        buttonBoard.remove(d);
+                        showButtons();
+                    } else if (message.startsWith("PLAY")) {
+                        in.close();
+                        out.close();
+                        playing = true;
+                        break;
                     } else if (message.startsWith("SETTINGS")) {
                         if (count == 4) {
                             count = 0;
@@ -225,8 +237,10 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         category.setFont(new Font("Lucida Grande", Font.BOLD, 16));
     }
 
-
     public static void main(String[] args) {
         User user = new User();
+        if (user.playing) {
+            User again = new User();
+        }
     }
 }
