@@ -31,6 +31,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     JButton d = new JButton("");
     PrintWriter out;
     ObjectInputStream in;
+    Socket socket;
     Question question;
     Boolean questionMode = false;
     ArrayList<JButton> buttons = new ArrayList<>();
@@ -81,7 +82,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         Question question;
 
         try {   //Kommunikation mellan klienten och servern
-            Socket socket = new Socket("127.0.0.1", 55565);
+            socket = new Socket("127.0.0.1", 55565);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new ObjectInputStream(socket.getInputStream());
             Object obj;
@@ -147,6 +148,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                 try {
                     in.close();
                     out.close();
+                    socket.close();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
