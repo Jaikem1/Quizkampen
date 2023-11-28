@@ -18,7 +18,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
     Color backgroundColor = new Color(106, 90, 205);
     JPanel buttonBoard = new JPanel(new GridLayout(2, 2));
-    JPanel categoryBoard = new JPanel(new GridLayout(1,3));
+    JPanel categoryBoard = new JPanel(new GridLayout(1, 3));
     JLabel left = new JLabel();
     JLabel right = new JLabel();
     JLabel text = new JLabel("Frågan som ställs står här");
@@ -32,10 +32,68 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     Question question;
     Boolean questionMode = false;
     ArrayList<JButton> buttons = new ArrayList<>();
+    boolean playAgainState = false;
+    boolean running = true;
 
+    public void RunConnection(){
+        String message;
+        Question question;
 
-    public User() {
+        try {   //Kommunikation mellan klienten och servern
+            Socket socket = new Socket("127.0.0.1", 55565);
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new ObjectInputStream(socket.getInputStream());
+            Object obj;
+            while ((obj = in.readObject()) != null) {
+                questionMode = false;
 
+                if (obj instanceof Question) {  //Vid inkommande fråga skrivs frågan och svarsalternativ ut och questionmode för action listener aktiveras.
+                    question = (Question) obj;
+                    this.question = question;
+                    paintQuestion();
+                    questionMode = true;
+                    showButtons();
+                    resetButtonColors();
+
+                } else { //Kategorival visas. Vid inkommande text hanteras processen enligt första ordet i meddelandet.
+                    category.setForeground(backgroundColor);// Osynlig text => Samma färg som bakgrund. Text behövs för att label ska målas ut korrekt.
+                    message = (String) obj;
+                    if (message.startsWith("MESSAGE")) {
+                        text.setText(message.substring(8));
+                    } else if (message.startsWith("DISABLE")) {
+                        hideButtons();
+                    } else if (message.contains("Vill du spela igen")) {
+                        playAgainState = true;
+                        resetButtonColors();
+                        showButtons();
+                        buttonBoard.remove(c);
+                        buttonBoard.remove(d);
+                        a.setText("JA");
+                        b.setText("NEJ");
+                        text.setText(message.substring(7));
+                    } else if (message.startsWith("<html>MESSAGE")) {
+                        hideButtons();
+                        text.setText("<html>" + message.substring(14));
+                    } else if (message.startsWith("CATEGORY")) {
+                        category.setText(message.substring(8).toUpperCase());
+                        category.setForeground(Color.ORANGE);
+                    } else {
+                        String[] categories = message.split(" ");
+                        resetButtonColors();
+                        showButtons();
+                        a.setText(categories[0]);
+                        b.setText(categories[1]);
+                        c.setText(categories[2]);
+                        d.setText(categories[3]);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void RunClient() {
+        playAgainState = false;
         setTitle("Quiz Game");  //GUI ritas upp
         getContentPane().setBackground(backgroundColor);
         categoryBoard.setBackground(backgroundColor);
@@ -67,66 +125,31 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        String message;
-        Question question;
+    }
 
-        try {   //Kommunikation mellan klienten och servern
-            Socket socket = new Socket("127.0.0.1", 55565);
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new ObjectInputStream(socket.getInputStream());
-            Object obj;
-            while ((obj = in.readObject()) != null) {
-                questionMode = false;
-
-                if (obj instanceof Question) {  //Vid inkommande fråga skrivs frågan och svarsalternativ ut och questionmode för action listener aktiveras.
-                    question = (Question) obj;
-                    this.question = question;
-                    paintQuestion();
-                    questionMode = true;
-                    showButtons();
-                    resetButtonColors();
-
-                } else { //Kategorival visas. Vid inkommande text hanteras processen enligt första ordet i meddelandet.
-                    category.setForeground(backgroundColor);// Osynlig text => Samma färg som bakgrund. Text behövs för att label ska målas ut korrekt.
-                    message = (String) obj;
-                    if (message.startsWith("MESSAGE")) {
-                        text.setText(message.substring(8));
-                    } else if (message.startsWith("DISABLE")) {
-                        hideButtons();
-                    } else if (message.startsWith("<html>MESSAGE")) {
-                        if (message.startsWith("<html>MESSAGE Vill du spela igen?")){
-                            resetButtonColors();
-                            showButtons();
-                            buttonBoard.remove(c);
-                            buttonBoard.remove(d);
-                            a.setText("JA");
-                            b.setText("NEJ");
-                        }
-                        hideButtons();
-                        text.setText("<html>" + message.substring(14));
-                    } else if (message.startsWith("CATEGORY")) {
-                        category.setText(message.substring(8).toUpperCase());
-                        category.setForeground(Color.ORANGE);
-                    } else {
-                        String[] categories = message.split(" ");
-                        resetButtonColors();
-                        showButtons();
-                        a.setText(categories[0]);
-                        b.setText(categories[1]);
-                        c.setText(categories[2]);
-                        d.setText(categories[3]);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public boolean isRunning() {
+        return running;
     }
 
     public void actionPerformed(ActionEvent e) { //skickar knappval till servern
 
         JButton button = (JButton) e.getSource();
         out.println(e.getActionCommand());
+
+        if (playAgainState) {
+            if (e.getSource().equals(a)) {
+                try {
+                    in.close();
+                    out.close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                RunClient();
+                RunConnection();
+            } else if (e.getSource().equals(b)) {
+                System.exit(0);
+            }
+        }
 
         if (questionMode) { //I questionmode byter knappen färg till grön/röd vid rätt/fel svar.
             if (e.getActionCommand().equals(question.getAnswer())) {
@@ -196,5 +219,9 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
     public static void main(String[] args) {
         User user = new User();
+        do {
+            user.RunClient();
+            user.RunConnection();
+        } while (user.isRunning());
     }
 }

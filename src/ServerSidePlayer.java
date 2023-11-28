@@ -2,10 +2,7 @@
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 class ServerSidePlayer extends Thread { //innehåller serversidans spellogik för varje enskild spelare
     ServerSidePlayer opponent;
@@ -29,7 +26,8 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
     private StringBuilder pointsMessage = new StringBuilder();
     private String scoreOutput;
 
-
+    String userAnswer;
+    String pickedCategory;
 
     public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {  //constructor med in/out-streams och initialt meddelande vid uppkoppling.
 
@@ -66,9 +64,6 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
 
         Properties p = new Properties();    //Skapar upp properties
 
-        String userAnswer;
-        String pickedCategory = "";
-
         int settingsQuestionsPerRound;
         int settingsNumberOfRounds;
         int currentQuestion = 0;
@@ -104,6 +99,10 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                             Collections.shuffle(game.getSelectedCategory().getQuestions());
                             game.categoryIsPicked = true;
                             state = ROUNDS;
+                            System.out.println(userAnswer + "in state select");
+                            while (input.ready()) {
+                                input.readLine();
+                            }
                             break;
                         }
                     } else {
@@ -112,16 +111,20 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                         while (!game.categoryIsPicked) {
                             Thread.sleep(100);
                         }
+                        while (input.ready()) {
+                            input.readLine();
+                        }
                         state = ROUNDS;
                     }
                 } else if (state == ROUNDS) {   //Spelrondens frågor och poängräkning
+                    System.out.println(userAnswer + "in state rounds");
                     output.writeObject("CATEGORY" + game.getSelectedCategory().getName());
                     while (game.getSelectedCategory() != null) {
+                        System.out.println(userAnswer + "in while selected category");
                         Collections.shuffle(game.getSelectedCategory().getQuestions().get(currentQuestion).getAlternatives());
                         output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
-
-
                         if ((userAnswer = input.readLine()) != null) {
+                            System.out.println(userAnswer + "in if");
                             if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(currentQuestion).getAnswer())) {
                                 this.points++;
                                 this.roundPoints++;
@@ -176,7 +179,6 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     }
                 }
                 else if (state == ENDGAME) {    //Efter sista ronden är spelad. Resultatmeddelande visas.
-
                     if (points > opponent.points){
                         output.writeObject("<html>MESSAGE Spelet är slut. <br><br> Du vann! <br><br>" + scoreOutput + getPointsMessage());
                         Thread.sleep(5000);
@@ -194,7 +196,16 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     }
                 }
                 else if (state == PLAYAGAIN){
-                    output.writeObject("<html>MESSAGE Vill du spela igen?");
+                    output.writeObject("<html> Vill du spela igen?");
+                    userAnswer = null;
+                    pickedCategory = null;
+                    String response = "";
+                    while ((response = input.readLine()) != null){
+                        if (response.equals("JA")){
+                            state = SELECT;
+                            break;
+                        }
+                    }
                 }
             }
         } catch (
