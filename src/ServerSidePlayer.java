@@ -23,6 +23,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
     private final int ENDROUND = 2;
     private final int BETWEEN = 3;
     private final int ENDGAME = 4;
+    private final int PLAYAGAIN = 5;
     private int state = SELECT;     //State-markör
     private int roundNumber = 0;    //spelrondens ordningsnummer
     private int roundPoints = 0;    //Spelarens poäng för spelronden
@@ -64,6 +65,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
         return pointsMessage;
     }   //returnerar poängmeddelandet
 
+    /*
     public void playerExit() { //Hanterar om motståndaren lämnar
         try {
             if (opponent != null && opponent.output != null) {
@@ -71,6 +73,14 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+     */
+
+    public void clearReadline() throws IOException {
+        while (input.ready()) {
+            input.readLine();
         }
     }
 
@@ -103,6 +113,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
 
                 if (state == SELECT) {  //currentPlayer väljer kategori. Opponent väntar.
                     currentQuestion = 0;
+                    clearReadline();
 
                     if (this.equals(game.currentPlayer)) {
                         Collections.shuffle(game.categories);
@@ -114,6 +125,8 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                             Collections.shuffle(game.getSelectedCategory().getQuestions());
                             game.categoryIsPicked = true;
                             state = ROUNDS;
+
+                            clearReadline();
                             break;
                         }
                     } else {
@@ -122,24 +135,31 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                         while (!game.categoryIsPicked) {
                             Thread.sleep(100);
                         }
+
+                        clearReadline();
                         state = ROUNDS;
                     }
                 } else if (state == ROUNDS) {   //Spelrondens frågor och poängräkning
                     output.writeObject("CATEGORY" + game.getSelectedCategory().getName());
+                    clearReadline();
+
                     while (game.getSelectedCategory() != null) {
                         Collections.shuffle(game.getSelectedCategory().getQuestions().get(currentQuestion).getAlternatives());
                         output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
-
+                        clearReadline();
 
                         if ((userAnswer = input.readLine()) != null) {
                             if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(currentQuestion).getAnswer())) {
                                 this.points++;
                                 this.roundPoints++;
+                                clearReadline();
                             }
                         }
                         Thread.sleep(500);
                         currentQuestion++;
                         if (currentQuestion == settingsQuestionsPerRound) {
+
+                            clearReadline();
                             state = ENDROUND;
                             break;
                         }
@@ -166,6 +186,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     }
                     game.categoryIsPicked = false;
                     game.opponentIsWaiting = false;
+                    clearReadline();
                     state = BETWEEN;
                 }
                 else if (state == BETWEEN) { //Spelarnas poäng för ronden visas för båda innan nästa rond påbörjas
@@ -187,28 +208,46 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     }
                 }
                 else if (state == ENDGAME) {    //Efter sista ronden är spelad. Resultatmeddelande visas.
+                    clearReadline();
 
                     if (points > opponent.points){
                         output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
                         output.writeObject("CATEGORY Du vann!");
+                        Thread.sleep(5000);
+                        state = PLAYAGAIN;
                     }
                     else if (points == opponent.points) {
                         output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
                         output.writeObject("CATEGORY Oavgjort" );
+                        Thread.sleep(5000);
+                        state = PLAYAGAIN;
                     }
                     else{
                         output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
                         output.writeObject("CATEGORY Du förlorade :(" );
+                        Thread.sleep(5000);
+                        state = PLAYAGAIN;
                     }
-                    Thread.sleep(10000);
-                    socket.close();
+                }
+                else if (state == PLAYAGAIN){
+                    clearReadline();
+                    output.writeObject("<html> Vill du spela igen?");
+
+                    /*
+                    String response = "";
+                    while ((response = input.readLine()) != null){
+                        if (response.equals("JA")){
+                            state = SELECT;
+                            break;
+                        }}
+                     */
                 }
             }
-        } catch (SocketException e) {
-           playerExit();
-
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (
+                IOException e) {
+            System.out.println("Player died: " + e);
+        } catch (
+                InterruptedException e) {
         } finally {
             try {
                 socket.close();
