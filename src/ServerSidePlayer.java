@@ -23,6 +23,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
     private final int ENDROUND = 2;
     private final int BETWEEN = 3;
     private final int ENDGAME = 4;
+    private final int PLAYAGAIN = 5;
     private int state = SELECT;     //State-markör
     private int roundNumber = 0;    //spelrondens ordningsnummer
     private int roundPoints = 0;    //Spelarens poäng för spelronden
@@ -64,6 +65,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
         return pointsMessage;
     }   //returnerar poängmeddelandet
 
+    /*
     public void playerExit() { //Hanterar om motståndaren lämnar
         try {
             if (opponent != null && opponent.output != null) {
@@ -73,6 +75,8 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
             e.printStackTrace();
         }
     }
+
+     */
 
     public void run() { //Här sker spelronderna och övrig logik
 
@@ -114,6 +118,11 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                             Collections.shuffle(game.getSelectedCategory().getQuestions());
                             game.categoryIsPicked = true;
                             state = ROUNDS;
+
+                            //Töm readline
+                            while (input.ready()) {
+                                input.readLine();
+                            }
                             break;
                         }
                     } else {
@@ -121,6 +130,10 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                         output.writeObject("DISABLE");
                         while (!game.categoryIsPicked) {
                             Thread.sleep(100);
+                        }
+                        //Töm readline
+                        while (input.ready()) {
+                            input.readLine();
                         }
                         state = ROUNDS;
                     }
@@ -191,24 +204,41 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     if (points > opponent.points){
                         output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
                         output.writeObject("CATEGORY Du vann!");
+                        Thread.sleep(5000);
+                        state = PLAYAGAIN;
                     }
                     else if (points == opponent.points) {
                         output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
                         output.writeObject("CATEGORY Oavgjort" );
+                        Thread.sleep(5000);
+                        state = PLAYAGAIN;
                     }
                     else{
                         output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
                         output.writeObject("CATEGORY Du förlorade :(" );
+                        Thread.sleep(5000);
+                        state = PLAYAGAIN;
                     }
-                    Thread.sleep(10000);
-                    socket.close();
+                }
+                else if (state == PLAYAGAIN){
+                    output.writeObject("<html> Vill du spela igen?");
+                    //Töm readline
+                    while (input.ready()) {
+                        input.readLine();
+                    }
+                    String response = "";
+                    while ((response = input.readLine()) != null){
+                        if (response.equals("JA")){
+                            state = SELECT;
+                            break;
+                        }}
                 }
             }
-        } catch (SocketException e) {
-           playerExit();
-
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (
+                IOException e) {
+            System.out.println("Player died: " + e);
+        } catch (
+                InterruptedException e) {
         } finally {
             try {
                 socket.close();

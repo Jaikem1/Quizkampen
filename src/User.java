@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -33,9 +34,16 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     Question question;
     Boolean questionMode = false;
     ArrayList<JButton> buttons = new ArrayList<>();
+    boolean playAgainState = false;
+    boolean running = true;
+
+    public boolean isRunning() {
+        return running;
+    }
 
 
-    public User() {
+    public void RunClient() {
+        playAgainState = false;
 
         setTitle("Quiz Game");  //GUI ritas upp
         getContentPane().setBackground(backgroundColor);
@@ -95,6 +103,15 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                         text.setText(message.substring(8));
                     } else if (message.startsWith("DISABLE")) {
                         hideButtons();
+                    } else if (message.contains("Vill du spela igen")) {
+                        playAgainState = true;
+                        resetButtonColors();
+                        showButtons();
+                        buttonBoard.remove(c);
+                        buttonBoard.remove(d);
+                        a.setText("JA");
+                        b.setText("NEJ");
+                        text.setText(message.substring(7));
                     } else if (message.startsWith("<html>MESSAGE")) {
                         hideButtons();
                         text.setText("<html>" + message.substring(14));
@@ -124,6 +141,20 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
         JButton button = (JButton) e.getSource();
         out.println(e.getActionCommand());
+
+        if (playAgainState) {
+            if (e.getSource().equals(a)) {
+                try {
+                    in.close();
+                    out.close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                RunClient();
+            } else if (e.getSource().equals(b)) {
+                System.exit(0);
+            }
+        }
 
         if (questionMode) { //I questionmode byter knappen färg till grön/röd vid rätt/fel svar.
             JButton correctAnswer = findAnswerButton();
@@ -205,5 +236,8 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
     public static void main(String[] args) {
         User user = new User();
+        while (user.isRunning()) {
+            user.RunClient();
+        }
     }
 }
