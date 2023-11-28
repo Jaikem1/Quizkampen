@@ -146,8 +146,6 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         if (playAgainState) {
             if (e.getSource().equals(a)) {
                 try {
-                    in.close();
-                    out.close();
                     socket.close();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);

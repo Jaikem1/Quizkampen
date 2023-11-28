@@ -78,6 +78,12 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
 
      */
 
+    public void clearReadline() throws IOException {
+        while (input.ready()) {
+            input.readLine();
+        }
+    }
+
     public void run() { //Här sker spelronderna och övrig logik
 
         Properties p = new Properties();    //Skapar upp properties
@@ -107,6 +113,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
 
                 if (state == SELECT) {  //currentPlayer väljer kategori. Opponent väntar.
                     currentQuestion = 0;
+                    clearReadline();
 
                     if (this.equals(game.currentPlayer)) {
                         Collections.shuffle(game.categories);
@@ -119,10 +126,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                             game.categoryIsPicked = true;
                             state = ROUNDS;
 
-                            //Töm readline
-                            while (input.ready()) {
-                                input.readLine();
-                            }
+                            clearReadline();
                             break;
                         }
                     } else {
@@ -131,28 +135,31 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                         while (!game.categoryIsPicked) {
                             Thread.sleep(100);
                         }
-                        //Töm readline
-                        while (input.ready()) {
-                            input.readLine();
-                        }
+
+                        clearReadline();
                         state = ROUNDS;
                     }
                 } else if (state == ROUNDS) {   //Spelrondens frågor och poängräkning
                     output.writeObject("CATEGORY" + game.getSelectedCategory().getName());
+                    clearReadline();
+
                     while (game.getSelectedCategory() != null) {
                         Collections.shuffle(game.getSelectedCategory().getQuestions().get(currentQuestion).getAlternatives());
                         output.writeObject(game.getSelectedCategory().getQuestions().get(currentQuestion));
-
+                        clearReadline();
 
                         if ((userAnswer = input.readLine()) != null) {
                             if (userAnswer.equals(game.getSelectedCategory().getQuestions().get(currentQuestion).getAnswer())) {
                                 this.points++;
                                 this.roundPoints++;
+                                clearReadline();
                             }
                         }
                         Thread.sleep(500);
                         currentQuestion++;
                         if (currentQuestion == settingsQuestionsPerRound) {
+
+                            clearReadline();
                             state = ENDROUND;
                             break;
                         }
@@ -179,6 +186,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     }
                     game.categoryIsPicked = false;
                     game.opponentIsWaiting = false;
+                    clearReadline();
                     state = BETWEEN;
                 }
                 else if (state == BETWEEN) { //Spelarnas poäng för ronden visas för båda innan nästa rond påbörjas
@@ -200,6 +208,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     }
                 }
                 else if (state == ENDGAME) {    //Efter sista ronden är spelad. Resultatmeddelande visas.
+                    clearReadline();
 
                     if (points > opponent.points){
                         output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
@@ -221,17 +230,17 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     }
                 }
                 else if (state == PLAYAGAIN){
+                    clearReadline();
                     output.writeObject("<html> Vill du spela igen?");
-                    //Töm readline
-                    while (input.ready()) {
-                        input.readLine();
-                    }
+
+                    /*
                     String response = "";
                     while ((response = input.readLine()) != null){
                         if (response.equals("JA")){
                             state = SELECT;
                             break;
                         }}
+                     */
                 }
             }
         } catch (
