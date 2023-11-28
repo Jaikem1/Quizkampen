@@ -77,7 +77,9 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         setLocationRelativeTo(null);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
 
+    public void runConnection (){
         String message;
         Question question;
 
@@ -145,13 +147,15 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
         if (playAgainState) {
             if (e.getSource().equals(a)) {
+                out.println("JA");
                 try {
-                    socket.close();
                     playAgainState = false;
+                    socket.close();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
                 RunClient();
+                runConnection();
             } else if (e.getSource().equals(b)) {
                 System.exit(0);
             }
@@ -239,6 +243,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         User user = new User();
         while (user.isRunning()) {
             user.RunClient();
+            user.runConnection();
         }
     }
 }

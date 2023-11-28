@@ -220,6 +220,12 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                 } else if (state == PLAYAGAIN) {
                     clearReadline();
                     output.writeObject("<html> Vill du spela igen?");
+                    String response = "";
+                    while ((response = input.readLine()) != null){
+                        if (response.equals("JA")){
+                            state = SELECT;
+                        }
+                    }
 
                 } else if (state == PLAYEREXITED) {    //om motspelaren stänger ner sitt fönster under pågående spel
                     try {
