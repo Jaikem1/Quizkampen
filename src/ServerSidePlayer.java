@@ -221,14 +221,6 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     clearReadline();
                     output.writeObject("<html> Vill du spela igen?");
 
-                    /*
-                    String response = "";
-                    while ((response = input.readLine()) != null){
-                        if (response.equals("JA")){
-                            state = SELECT;
-                            break;
-                        }}
-                     */
                 } else if (state == PLAYEREXITED) {    //om motspelaren stänger ner sitt fönster under pågående spel
                     try {
                         output.writeObject("FEL Oops! Motståndaren har lämnat spelet. Du vann!");
