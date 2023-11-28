@@ -119,16 +119,21 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                         a.setText("Starta");
                         b.setText("Ändra bakgrundsfärg");
                     } else if (message.startsWith("END")) {
+                        text.setText("Vill du spela igen?");
                         a.setText("Ja");
                         b.setText("Nej");
-                        buttonBoard.remove(c);
-                        buttonBoard.remove(d);
+                        c.setText("");
+                        d.setText("");
                         showButtons();
                     } else if (message.startsWith("PLAY")) {
-                        in.close();
-                        out.close();
+                        dispose();
+                       // in.close();
+                       // out.close();
                         playing = true;
                         break;
+                    } else if (message.startsWith("CLOSE")) {
+                        socket.close();
+                        System.exit(0);
                     } else if (message.startsWith("SETTINGS")) {
                         if (count == 4) {
                             count = 0;
@@ -238,9 +243,13 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     }
 
     public static void main(String[] args) {
-        User user = new User();
-        if (user.playing) {
-            User again = new User();
+        while (true) {
+            User user = new User();
+            if (user.playing) {
+                user.playing = false;
+            } else {
+                break;
+            }
         }
     }
 }

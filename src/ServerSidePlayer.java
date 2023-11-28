@@ -212,13 +212,14 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     Thread.sleep(10000);
                     state = NEW;
                 } else if (state == NEW) {
-                    output.writeObject("END Vill du spela igen?");
-                    String selection = input.readLine();
-                    if (selection.equals("Nej")) {
-                        socket.close();
-                        System.exit(0);
-                    } else if (selection.equals("Ja")) {
-                        output.writeObject("PLAY");
+                    output.writeObject("END");
+                    while (true) {
+                        String selection = input.readLine();
+                        if (selection.equals("Nej")) {
+                            output.writeObject("CLOSE");
+                        } else if (selection.equals("Ja")) {
+                            output.writeObject("PLAY");
+                        }
                     }
                 }
             }
