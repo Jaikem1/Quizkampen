@@ -45,6 +45,8 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
     public void RunClient() {
         playAgainState = false;
+        buttonBoard.revalidate();
+        buttonBoard.repaint();
 
         setTitle("Quiz Game");  //GUI ritas upp
         getContentPane().setBackground(backgroundColor);
