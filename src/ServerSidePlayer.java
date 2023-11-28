@@ -95,7 +95,8 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
             while (true) {
                 if (state == LANDING) {
                     output.writeObject("LOBBY Välkommen");
-                    if (input.readLine().equals("Starta")) {
+                    String test = input.readLine();
+                    if (test.equals("Starta")) {
                         readyToStart = true;
                         if (!opponent.readyToStart) {
                             output.writeObject("MESSAGE Väntar på motspelaren");
@@ -105,7 +106,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                             }
                         }
                         state = SELECT;
-                    } else if (input.readLine().equals("Ändra bakgrundsfärg")) {
+                    } else if (test.equals("Ändra bakgrundsfärg")) {
                         output.writeObject("SETTINGS");
                     }
                 } else if (state == SELECT) {  //currentPlayer väljer kategori. Opponent väntar.
