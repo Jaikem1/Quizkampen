@@ -11,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class User extends JFrame implements ActionListener { //Klienten. Det användaren ser och jobbar mot.
 
@@ -41,11 +42,9 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     boolean playAgainState = false;
     boolean running = true;
     boolean conRunning = true;
-
     public boolean isRunning() {
         return running;
     }
-
 
     public void RunClient() {
         playAgainState = false;
@@ -110,6 +109,9 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
                 } else { //Kategorival visas. Vid inkommande text hanteras processen enligt första ordet i meddelandet.
                     category.setForeground(backgroundColor);// Osynlig text => Samma färg som bakgrund. Text behövs för att label ska målas ut korrekt.
+                    getContentPane().setBackground(backgroundColor);
+                    styleButtons();
+                    styleCategoryBoard();
                     message = (String) obj;
                     if (message.startsWith("MESSAGE")) {
                         text.setText(message.substring(8));
@@ -123,6 +125,8 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                         buttonBoard.remove(d);
                         a.setText("JA");
                         b.setText("NEJ");
+                        c.setText("");
+                        d.setText("");
                         text.setText(message.substring(7));
                     } else if (message.startsWith("<html>MESSAGE")) {
                         hideButtons();
@@ -186,7 +190,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     }
 
     public void paintQuestion() { //Skriver ut frågan på label och svarsalternativen på knapparna
-        text.setText("<html><body style='padding: 20px; text-align: center;'>" + question.getQuestion() + "</body></html>");
+        text.setText("<html><body style='padding: 20px; text-align: center;'>" + question.getQuestion() + "</body>");
         a.setText(question.getAlternatives().get(0));
         b.setText(question.getAlternatives().get(1));
         c.setText(question.getAlternatives().get(2));
@@ -250,7 +254,6 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         categoryBoard.add(right);
         category.setFont(new Font("Lucida Grande", Font.BOLD, 16));
     }
-
 
     public static void main(String[] args) {
         User user = new User();

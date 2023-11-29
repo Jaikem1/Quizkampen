@@ -32,6 +32,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
     private List<Integer> roundScores = new ArrayList<>();   //Sparar de individuella rondernas poäng
     private StringBuilder pointsMessage = new StringBuilder();
     private String scoreOutput;
+    private boolean readyToStart = false;
 
 
     public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {  //constructor med in/out-streams och initialt meddelande vid uppkoppling.
@@ -174,7 +175,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                         game.opponentIsWaiting = true;
 
                         output.writeObject("<html>MESSAGE <body style='text-align: center;'> Du fick " + "<span style='color: orange;'>" + roundScores.get(this.roundNumber - 1) + "</span> poäng den här rundan." +
-                                "<br><br>Väntar på att motståndaren ska att avsluta sin runda.</body></html>");
+                                "<br><br>Väntar på att motståndaren ska att avsluta sin runda.</body>");
                         while (game.waitForOpponent) {
                             Thread.sleep(100);
                         }
@@ -199,7 +200,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                                 .append("</td><td style='color: #FFCF41; width: 30%; text-align: left;'>")
                                 .append("\u2605".repeat(opponent.roundScores.get(i))).append("</td>");
                     }
-                    output.writeObject("<html>MESSAGE" + scoreOutput + getPointsMessage() + "</table></div></html>");
+                    output.writeObject("<html>MESSAGE" + scoreOutput + getPointsMessage() + "</table></div>");
                     output.writeObject("CATEGORY Poäng");
 
                     if (roundNumber == settingsNumberOfRounds) {
