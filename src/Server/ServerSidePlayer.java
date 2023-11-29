@@ -83,7 +83,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
         int currentQuestion = 0;
 
         try {   //läser in properties från fil och ställer in antal ronder och antal frågor per rond
-            p.load(new FileInputStream("src/Settings.properties"));
+            p.load(new FileInputStream("src/Server/Settings.properties"));
         } catch (IOException e) {
             System.out.println("Settings filen hittades ej!");
         }
