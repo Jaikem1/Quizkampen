@@ -204,19 +204,20 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     if (points > opponent.points) {
                         output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
                         output.writeObject("CATEGORY Du vann!");
-                        Thread.sleep(5000);
-                        state = PLAYAGAIN;
+
                     } else if (points == opponent.points) {
                         output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
                         output.writeObject("CATEGORY Oavgjort");
-                        Thread.sleep(5000);
-                        state = PLAYAGAIN;
+
                     } else {
                         output.writeObject("<html>MESSAGE " + scoreOutput + getPointsMessage());
                         output.writeObject("CATEGORY Du förlorade :(");
-                        Thread.sleep(5000);
-                        state = PLAYAGAIN;
+
                     }
+
+                    Thread.sleep(5000);
+                    state = PLAYAGAIN;
+
                 } else if (state == PLAYAGAIN) {
                     clearReadline();
                     output.writeObject("<html> Vill du spela igen?");

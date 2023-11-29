@@ -46,8 +46,6 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
     public void RunClient() {
         playAgainState = false;
-        buttonBoard.revalidate();
-        buttonBoard.repaint();
 
         setTitle("Quiz Game");  //GUI ritas upp
         getContentPane().setBackground(backgroundColor);
@@ -60,6 +58,8 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         text.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
         text.setHorizontalAlignment(SwingConstants.CENTER);
         text.setForeground(Color.WHITE);
+
+        buttons.clear();
 
         buttons.add(a);
         buttons.add(b);
@@ -75,6 +75,9 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
         styleButtons();
         hideButtons();
+
+        buttonBoard.revalidate();
+        buttonBoard.repaint();
 
         setSize(500, 350);
         setLocationRelativeTo(null);
