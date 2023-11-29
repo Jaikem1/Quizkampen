@@ -108,9 +108,6 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
                 } else { //Kategorival visas. Vid inkommande text hanteras processen enligt första ordet i meddelandet.
                     category.setForeground(backgroundColor);// Osynlig text => Samma färg som bakgrund. Text behövs för att label ska målas ut korrekt.
-                    getContentPane().setBackground(backgroundColor);
-                    styleButtons();
-                    styleCategoryBoard();
                     message = (String) obj;
                     if (message.startsWith("MESSAGE")) {
                         text.setText(message.substring(8));
