@@ -11,7 +11,6 @@ import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class User extends JFrame implements ActionListener { //Klienten. Det användaren ser och jobbar mot.
 
