@@ -1,3 +1,8 @@
+package Server;
+
+import POJOs.Category;
+import POJOs.Question;
+
 import java.io.*;
 import java.util.ArrayList;
 

@@ -1,6 +1,5 @@
+package Server;
 
-
-import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
