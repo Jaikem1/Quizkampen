@@ -98,7 +98,7 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
         }
 
         for (int i = 1; i <= settingsNumberOfRounds; i++) {
-            roundCategories.add("-");
+            roundCategories.add("?");
         }
 
         try {
@@ -188,12 +188,12 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     clearReadline();
                     state = BETWEEN;
                 } else if (state == BETWEEN) { //Spelarnas poäng för ronden visas för båda innan nästa rond påbörjas
-                    scoreOutput = " <div style='text-align: center;'><table border=\"0\" style='margin: auto; width: 200px'><tr style='font-size: 18px;'><td style='text-align: right;'>" +
-                                    this.points + "</td><td style='padding-left: 10px; padding-right: 10px; text-align: center;'>Totalt</td><td style ='text-align: left;'>" +
+                    scoreOutput = " <div style='text-align: center;'><table border=\"0\" style='margin: auto; width: 160px'><tr style='font-size: 18px;'><td style='text-align: right;'>" +
+                                    this.points + "</td><td style='text-align: center;'>Totalt</td><td style ='text-align: left;'>" +
                                     this.opponent.points + "</td></tr></table><br><table border=\"0\" style='margin: auto; width: 200px'>";
                     for (int i = 0; i < settingsNumberOfRounds; i++) {
-                        this.pointsMessage.append("<tr><td style='color: yellow; width: 30%; text-align: right'>").append("\u2605".repeat(roundScores.get(i))).append("</td><td style='text-align: center;'>").append(roundCategories.get(i))
-                                .append("</td><td style='color: yellow; width: 30%; text-align: left;'>").append("\u2605".repeat(opponent.roundScores.get(i))).append("</td>");
+                        this.pointsMessage.append("<tr><td style='color: #FFCF41; width: 30%; text-align: right'>").append("\u2605".repeat(roundScores.get(i))).append("</td><td style='text-align: center; color: #FFCF41;'>").append(roundCategories.get(i))
+                                .append("</td><td style='color: #FFCF41; width: 30%; text-align: left;'>").append("\u2605".repeat(opponent.roundScores.get(i))).append("</td>");
                     }
                     output.writeObject("<html>MESSAGE" + scoreOutput + getPointsMessage() + "</table></div></html>" );
                     output.writeObject("CATEGORY Poäng");
