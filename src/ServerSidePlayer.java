@@ -29,7 +29,8 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
     private int state = SELECT;     //State-markör
     private int roundNumber = 0;    //spelrondens ordningsnummer
     private int roundPoints = 0;    //Spelarens poäng för spelronden
-    private List<String> roundScores = new ArrayList<>();   //Sparar de individuella rondernas poäng
+    private List<String> roundCategories = new ArrayList<>();   //Sparar de individuella rondernas poäng
+    private List<Integer> roundScores = new ArrayList<>();
     private StringBuilder pointsMessage = new StringBuilder();
     private String scoreOutput;
 
@@ -93,7 +94,11 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
         settingsNumberOfRounds = Integer.parseInt(p.getProperty("rounds", "3"));
 
         for (int i = 1; i <= settingsNumberOfRounds; i++) {
-            roundScores.add("-");
+            roundScores.add(0);
+        }
+
+        for (int i = 1; i <= settingsNumberOfRounds; i++) {
+            roundCategories.add("-");
         }
 
         try {
@@ -159,7 +164,8 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     }
                 } else if (state == ENDROUND) { //Rondens poäng visas. Den spelare som först spelat klart ronden väntar här tills motspelaren avslutat sin rond.
                     setPointsMessage(pointsMessage.delete(0, pointsMessage.length()));
-                    this.roundScores.set(roundNumber, String.valueOf(roundPoints));
+                    this.roundCategories.set(roundNumber, game.getSelectedCategory().getName());
+                    this.roundScores.set(roundNumber, roundPoints);
                     this.roundNumber++; //nästa rond
                     this.roundPoints = 0; //rondens poäng nollställs
 
@@ -182,14 +188,14 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
                     clearReadline();
                     state = BETWEEN;
                 } else if (state == BETWEEN) { //Spelarnas poäng för ronden visas för båda innan nästa rond påbörjas
-                    scoreOutput = " <table border=\"0\"><tr style='font-size: 16px;'><td style='text-align: start;'>" + this.points +
-                            "</td><td style='text-align: center;'>Totalt</td><td style='text-align: end;'>" +
-                            this.opponent.points + "</td></tr>";
+                    scoreOutput = " <div style='text-align: center;'><table border=\"0\" style='margin: auto; width: 200px'><tr style='font-size: 18px;'><td style='text-align: right;'>" +
+                                    this.points + "</td><td style='padding-left: 10px; padding-right: 10px; text-align: center;'>Totalt</td><td style ='text-align: left;'>" +
+                                    this.opponent.points + "</td></tr></table><br><table border=\"0\" style='margin: auto; width: 200px'>";
                     for (int i = 0; i < settingsNumberOfRounds; i++) {
-                        this.pointsMessage.append("<tr><td style='text-align: start;'>").append("\u2713".repeat(Integer.parseInt(roundScores.get(i)))).append("</td><td> Rond ").append(i + 1)
-                                .append("</td><td style='text-align: end;'>").append("\u2713".repeat(Integer.parseInt(opponent.roundScores.get(i)))).append("</td></html>");
+                        this.pointsMessage.append("<tr><td style='color: yellow; width: 30%; text-align: right'>").append("\u2605".repeat(roundScores.get(i))).append("</td><td style='text-align: center;'>").append(roundCategories.get(i))
+                                .append("</td><td style='color: yellow; width: 30%; text-align: left;'>").append("\u2605".repeat(opponent.roundScores.get(i))).append("</td>");
                     }
-                    output.writeObject("<html>MESSAGE" + scoreOutput + getPointsMessage());
+                    output.writeObject("<html>MESSAGE" + scoreOutput + getPointsMessage() + "</table></div></html>" );
                     output.writeObject("CATEGORY Poäng");
 
                     if (roundNumber == settingsNumberOfRounds) {
