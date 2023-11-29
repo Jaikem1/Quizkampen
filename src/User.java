@@ -37,6 +37,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     ArrayList<JButton> buttons = new ArrayList<>();
     boolean playAgainState = false;
     boolean running = true;
+    boolean conRunning = true;
 
     public boolean isRunning() {
         return running;
@@ -45,8 +46,6 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
 
     public void RunClient() {
         playAgainState = false;
-        buttonBoard.revalidate();
-        buttonBoard.repaint();
 
         setTitle("Quiz Game");  //GUI ritas upp
         getContentPane().setBackground(backgroundColor);
@@ -59,6 +58,8 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         text.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
         text.setHorizontalAlignment(SwingConstants.CENTER);
         text.setForeground(Color.WHITE);
+
+        buttons.clear();
 
         buttons.add(a);
         buttons.add(b);
@@ -75,6 +76,9 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         styleButtons();
         hideButtons();
 
+        buttonBoard.revalidate();
+        buttonBoard.repaint();
+
         setSize(500, 350);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -90,7 +94,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new ObjectInputStream(socket.getInputStream());
             Object obj;
-            while ((obj = in.readObject()) != null) {
+            while (conRunning && (obj = in.readObject()) != null) {
                 questionMode = false;
 
                 if (obj instanceof Question) {  //Vid inkommande fråga skrivs frågan och svarsalternativ ut och questionmode för action listener aktiveras.
@@ -138,7 +142,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Ett förväntat socketexception inträffade. Inget att oroa sig över.");
         }
     }
 
@@ -152,12 +156,16 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                 out.println("JA");
                 try {
                     playAgainState = false;
+                    conRunning = false;
+                    in.close();
+                    out.close();
                     socket.close();
+                    conRunning = true;
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
-                RunClient();
-                runConnection();
+                //RunClient();
+                //runConnection();
             } else if (e.getSource().equals(b)) {
                 System.exit(0);
             }
