@@ -125,8 +125,6 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                         buttonBoard.remove(d);
                         a.setText("JA");
                         b.setText("NEJ");
-                        c.setText("");
-                        d.setText("");
                         text.setText(message.substring(7));
                     } else if (message.startsWith("<html>MESSAGE")) {
                         hideButtons();
