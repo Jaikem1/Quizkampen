@@ -142,7 +142,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Ett förväntat socketexception inträffade. Inget att oroa sig över.");
         }
     }
 
