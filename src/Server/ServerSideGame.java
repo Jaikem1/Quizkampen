@@ -1,4 +1,6 @@
+package Server;
 
+import POJOs.Category;
 
 import java.util.ArrayList;
 

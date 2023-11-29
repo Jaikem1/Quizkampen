@@ -1,3 +1,7 @@
+package Server;
+
+import POJOs.Category;
+import Server.GameLoader;
 
 import java.io.IOException;
 import java.net.ServerSocket;

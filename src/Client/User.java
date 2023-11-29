@@ -1,3 +1,6 @@
+package Client;
+
+import POJOs.Question;
 
 import javax.swing.*;
 import java.awt.*;
