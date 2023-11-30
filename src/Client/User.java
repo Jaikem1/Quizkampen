@@ -41,11 +41,9 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     boolean playAgainState = false;
     boolean running = true;
     boolean conRunning = true;
-
     public boolean isRunning() {
         return running;
     }
-
 
     public void RunClient() {
         playAgainState = false;
@@ -186,7 +184,7 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
     }
 
     public void paintQuestion() { //Skriver ut frågan på label och svarsalternativen på knapparna
-        text.setText("<html><body style='padding: 20px; text-align: center;'>" + question.getQuestion() + "</body></html>");
+        text.setText("<html><body style='padding: 20px; text-align: center;'>" + question.getQuestion() + "</body>");
         a.setText(question.getAlternatives().get(0));
         b.setText(question.getAlternatives().get(1));
         c.setText(question.getAlternatives().get(2));
@@ -250,7 +248,6 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
         categoryBoard.add(right);
         category.setFont(new Font("Lucida Grande", Font.BOLD, 16));
     }
-
 
     public static void main(String[] args) {
         User user = new User();
