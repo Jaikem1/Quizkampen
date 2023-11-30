@@ -32,7 +32,6 @@ class ServerSidePlayer extends Thread { //innehåller serversidans spellogik fö
     private List<Integer> roundScores = new ArrayList<>();   //Sparar de individuella rondernas poäng
     private StringBuilder pointsMessage = new StringBuilder();
     private String scoreOutput;
-    private boolean readyToStart = false;
 
 
     public ServerSidePlayer(Socket socket, ServerSideGame game, String player) {  //constructor med in/out-streams och initialt meddelande vid uppkoppling.
