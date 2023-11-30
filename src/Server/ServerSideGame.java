@@ -1,7 +1,5 @@
 package Server;
 
-import POJOs.Category;
-
 import java.util.ArrayList;
 
 class ServerSideGame {  //Innehåller de metoder och variabler som båda ServerSidePlayer-trådar och klienter behöver ha tillgång till.

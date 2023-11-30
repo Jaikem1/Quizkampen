@@ -1,6 +1,5 @@
 package Server;
 
-import POJOs.Category;
 import POJOs.Question;
 
 import java.io.*;
@@ -14,7 +13,7 @@ public class GameLoader {
 
         String[] categoryNames = {"Film", "Geografi", "Musik", "Vetenskap", "Sport", "Mat", "Dataspel", "Språk"};
         for (String categoryName : categoryNames) {
-            Category category = readCategoryFromFile("src/QuestionFiles/" + categoryName);
+            Category category = readCategoryFromFile("src/Server/QuestionFiles/" + categoryName);
             categories.add(category);
         }
         return categories;

@@ -1,4 +1,6 @@
-package POJOs;
+package Server;
+
+import POJOs.Question;
 
 import java.io.Serializable;
 import java.util.ArrayList;
