@@ -14,12 +14,12 @@ import java.util.ArrayList;
 
 public class User extends JFrame implements ActionListener { //Klienten. Det användaren ser och jobbar mot.
 
-    private final ImageIcon buttonIconSelect = new ImageIcon("src/Resources/purple_love.png");
-    private final ImageIcon buttonIconWrong = new ImageIcon("src/Resources/red_love.png");
-    private final ImageIcon buttonIconRight = new ImageIcon("src/Resources/green_love.png");
-    private final ImageIcon buttonIconMarkCorrect = new ImageIcon("src/Resources/green_mark.png");
-    private final ImageIcon starsLeft = new ImageIcon("src/Resources/Three stars left.png");
-    private final ImageIcon starsRight = new ImageIcon("src/Resources/Three stars right.png");
+    private final ImageIcon buttonIconSelect = new ImageIcon("src/Client/Resources/purple_love.png");
+    private final ImageIcon buttonIconWrong = new ImageIcon("src/Client/Resources/red_love.png");
+    private final ImageIcon buttonIconRight = new ImageIcon("src/Client/Resources/green_love.png");
+    private final ImageIcon buttonIconMarkCorrect = new ImageIcon("src/Client/Resources/green_mark.png");
+    private final ImageIcon starsLeft = new ImageIcon("src/Client/Resources/Three stars left.png");
+    private final ImageIcon starsRight = new ImageIcon("src/Client/Resources/Three stars right.png");
 
     Color backgroundColor = new Color(106, 90, 205);
     JPanel buttonBoard = new JPanel(new GridLayout(2, 2));
