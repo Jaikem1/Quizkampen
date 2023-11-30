@@ -165,8 +165,6 @@ public class User extends JFrame implements ActionListener { //Klienten. Det anv
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
-                //RunClient();
-                //runConnection();
             } else if (e.getSource().equals(b)) {
                 System.exit(0);
             }
